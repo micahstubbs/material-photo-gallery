@@ -43,3 +43,15 @@ A photo gallery inspired by Google Photos.
 	</div>
 </div>
 ```
+
+## Browser Support
+- IE 10+
+- Latest Chrome
+- Latest Firefox
+- Latest Safari
+
+## Credits
+This project uses [imagesLoaded by David DeSandro](https://github.com/desandro/imagesloaded), and [Google Image Layout by ptgamr](https://github.com/ptgamr/google-image-layout).
+
+## License
+MIT license.
