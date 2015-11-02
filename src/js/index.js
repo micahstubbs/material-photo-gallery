@@ -1,3 +1,3 @@
 require('imagesloaded');
-require('./google-image-layout');
+require('./vendor/google-image-layout');
 require('./material-photo-gallery');
