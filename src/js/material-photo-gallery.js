@@ -69,7 +69,7 @@
     this._thumbs = Array.prototype.slice.call(this._thumbsNodeList);
 
     // Container of full size images.
-    this._fullBox = this._gallery.querySelector('#' + this._thumbsBox.getAttribute('data-fullbox'));
+    this._fullBox = this._gallery.querySelector('.' + this._cssClasses.FULL_BOX);
 
     // Container of controls.
     this._controls = this._gallery.querySelector('.' + this._cssClasses.CONTROLS);

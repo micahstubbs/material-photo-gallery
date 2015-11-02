@@ -20,12 +20,12 @@ A photo gallery inspired by Google Photos.
 <div class="m-p-g">
 
 	<!-- GALLERY THUMBNAILS -->
-	<div class="m-p-g__thumbs google-image-layout" data-google-image-layout data-max-height="350" data-fullbox="m-p-g-fullscreen">
+	<div class="m-p-g__thumbs google-image-layout" data-google-image-layout data-max-height="350">
 			<img src="http://unsplash.it/600/400?image=198" data-full="http://unsplash.it/1200/800?image=198" class="m-p-g__thumbs-img" />
 			<!-- add your thumbnails here -->
 	</div>
 
-	<div class="m-p-g__fullscreen" id="m-p-g-fullscreen">
+	<div class="m-p-g__fullscreen">
 		<!-- FULL SIZE IMAGES GET APPENDED HERE -->
 	</div>
 
