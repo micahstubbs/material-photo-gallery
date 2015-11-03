@@ -1374,10 +1374,12 @@ require('./material-photo-gallery');
 
     // Hide the old thumbnail and reset its css transforms
     this._thumb.classList.remove('active', 'hide');
+    this._thumb.style.webkitTransform = 'translate3d(0, 0, 0)';
     this._thumb.style.transform = 'translate3d(0, 0, 0)';
 
     // Set the current thumbnail to the new one and apply the css transforms to it
     this._thumb = this._newThumb;
+    this._thumb.style.webkitTransform = this._cssTransformVal.call(this);
     this._thumb.style.transform = this._cssTransformVal.call(this);
     this._thumb.classList.add('hide');
   };
