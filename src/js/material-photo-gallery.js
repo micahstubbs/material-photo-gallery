@@ -24,7 +24,7 @@
    * Class constructor for Gallery component.
    *
    * @constructor
-   * @param {HTMLElement} element The gallery element.
+   * @param {HTMLElement} element - The gallery element.
    */
 
   var Gallery = function(element) {
@@ -184,7 +184,7 @@
   /**
    * Thumbnail hover event.
    *
-   * @param {Event} event The event.
+   * @param {Event} event - The event.
    * @private
    */
 
@@ -196,7 +196,7 @@
   /**
    * Thumbnail click event.
    *
-   * @param {event} event The event.
+   * @param {Event} event - The event.
    * @private
    */
 
@@ -217,8 +217,8 @@
    * Caches the thumbnail and full size image that was just hovered over.
    * Stores the css transform value so we can use it later.
    *
-   * @param {event} event The event.
-   * @param {function} function An optional callback function.
+   * @param {Event} event - The event.
+   * @param {Function} fn - An optional callback function.
    * @private
    */
 
@@ -299,7 +299,7 @@
   /**
    * Show the fullBox.
    *
-   *@private
+   * @private
    */
 
   Gallery.prototype._activateFullBox = function() {
@@ -397,7 +397,7 @@
    * Changes the active full size image and active thumbnail based on which
    * arrow was click (prev || next).
    *
-   * @param {String} dir A string to determine if we're going Prev or Next.
+   * @param {String} dir - A string to determine if we're going Prev or Next.
    * @private
    */
 
