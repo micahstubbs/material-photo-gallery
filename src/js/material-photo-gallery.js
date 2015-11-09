@@ -242,7 +242,7 @@
   };
 
   /**
-   * Animates the thumbnail and add the active class to it.
+   * Animate the thumbnail and add the active class to it.
    *
    * @private
    */
@@ -352,7 +352,7 @@
         this._fullBox.classList.remove('active');
         this._controls.classList.remove('active');
 
-        // Make thuumbnail go back to it's original size and shape
+        // Make thumbnail go back to it's original size and shape
         this._thumb.style.transform = 'translate3d(0, 0, 0)';
         this._thumb.style.webkitTransform = 'translate3d(0, 0, 0)';
 
@@ -462,13 +462,6 @@
     window.ontouchmove = null;
   };
 
-  function init() {
-    var g = document.querySelectorAll('.m-p-g');
-    for (var i = 0; i < g.length; i++) {
-      var a = new Gallery(g[i]);
-    }
-  }
-
-  init();
+  return Gallery;
 });
 

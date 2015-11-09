@@ -945,10 +945,18 @@ if ( typeof define === 'function' && define.amd ) {
 }.call(this));
 
 },{}],4:[function(require,module,exports){
-require('imagesloaded');
-require('./vendor/google-image-layout');
-require('./material-photo-gallery');
-},{"./material-photo-gallery":5,"./vendor/google-image-layout":6,"imagesloaded":1}],5:[function(require,module,exports){
+var Layout = require('./vendor/google-image-layout');
+var Gallery = require('./material-photo-gallery');
+
+// Select gallery element.
+var elem = document.querySelector('.m-p-g');
+
+// Init gallery
+document.addEventListener('DOMContentLoaded', function() {
+	var gallery = new Gallery(elem);
+});
+
+},{"./material-photo-gallery":5,"./vendor/google-image-layout":6}],5:[function(require,module,exports){
 /**
  *
  * Material Photo Gallery v0.0.1
@@ -1193,7 +1201,7 @@ require('./material-photo-gallery');
   };
 
   /**
-   * Animates the thumbnail and add the active class to it.
+   * Animate the thumbnail and add the active class to it.
    *
    * @private
    */
@@ -1303,7 +1311,7 @@ require('./material-photo-gallery');
         this._fullBox.classList.remove('active');
         this._controls.classList.remove('active');
 
-        // Make thuumbnail go back to it's original size and shape
+        // Make thumbnail go back to it's original size and shape
         this._thumb.style.transform = 'translate3d(0, 0, 0)';
         this._thumb.style.webkitTransform = 'translate3d(0, 0, 0)';
 
@@ -1413,14 +1421,7 @@ require('./material-photo-gallery');
     window.ontouchmove = null;
   };
 
-  function init() {
-    var g = document.querySelectorAll('.m-p-g');
-    for (var i = 0; i < g.length; i++) {
-      var a = new Gallery(g[i]);
-    }
-  }
-
-  init();
+  return Gallery;
 });
 
 
