@@ -44,8 +44,17 @@ A photo gallery inspired by Google Photos.
 </div>
 ```
 
+### Initialize Plugin
+``` js
+// Select gallery element.
+var elem = document.querySelector('.m-p-g');
+
+// Init gallery
+var gallery = new Gallery(elem);
+```
+
 ## Browser Support
-- IE 10+
+- IE 10+ (Soon)
 - Latest Chrome
 - Latest Firefox
 - Latest Safari

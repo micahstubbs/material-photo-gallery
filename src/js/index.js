@@ -1,10 +1,4 @@
-var Layout = require('./vendor/google-image-layout');
-var Gallery = require('./material-photo-gallery');
+// Expose Plugin to Global Scope
 
-// Select gallery element.
-var elem = document.querySelector('.m-p-g');
-
-// Init gallery
-document.addEventListener('DOMContentLoaded', function() {
-	var gallery = new Gallery(elem);
-});
+var MaterialPhotoGallery = require('./material-photo-gallery');
+window.MaterialPhotoGallery = MaterialPhotoGallery;

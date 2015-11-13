@@ -56,5 +56,14 @@
 		</div>
 
 		<script src="./dist/js/material-photo-gallery.js"></script>
+		<script>
+			// Select gallery element.
+			var elem = document.querySelector('.m-p-g');
+
+			// Init gallery
+			document.addEventListener('DOMContentLoaded', function() {
+				var gallery = new MaterialPhotoGallery(elem);
+			});
+		</script>
 	</body>
 </html>
