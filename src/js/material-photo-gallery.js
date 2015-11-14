@@ -40,6 +40,28 @@
 	};
 
 	/**
+	 * Detect CSS Transform support
+	 */
+	var transform = false,
+	    transformString = 'transform',
+	    domPrefixes = 'Webkit Moz ms'.split(' '),
+	    pfx = '',
+	    elem = document.createElement('div');
+
+	if (elem.style.transform !== undefined) { transform = true; }
+
+	if (transform === false) {
+	  for (var i = 0; i < domPrefixes.length; i++) {
+	    if (elem.style[domPrefixes[i] + 'Transform'] !== undefined) {
+	      pfx = domPrefixes[i];
+	      transformString = pfx + 'Transform';
+	      transform = true;
+	      break;
+	    }
+	  }
+	}
+
+	/**
 	 * Css class names stored as strings.
 	 *
 	 * @private
@@ -287,8 +309,7 @@
 				this._thumb.classList.add('active');
 
 				// Transform thumbnail to same size and position as full size image.
-				this._thumb.style.webkitTransform = this._thumbTransformVal;
-				this._thumb.style.transform = this._thumbTransformVal;
+				this._thumb.style[transformString] = this._thumbTransformVal;
 
 			}.bind(this);
 
@@ -381,8 +402,7 @@
 				this._controls.classList.remove('active');
 
 				// Make thumbnail go back to it's original size and shape
-				this._thumb.style.transform = 'translate3d(0, 0, 0)';
-				this._thumb.style.webkitTransform = 'translate3d(0, 0, 0)';
+				this._thumb.style[transformString] = 'translate3d(0, 0, 0)';
 
 				// Remove the high z-index.
 				this._thumb.classList.remove('active');
@@ -451,13 +471,11 @@
 
 		// Hide the old thumbnail and reset its css transforms
 		this._thumb.classList.remove('active', 'hide');
-		this._thumb.style.webkitTransform = 'translate3d(0, 0, 0)';
-		this._thumb.style.transform = 'translate3d(0, 0, 0)';
+		this._thumb.style[transformString] = 'translate3d(0, 0, 0)';
 
 		// Set the current thumbnail to the new one and apply the css transforms to it
 		this._thumb = this._newThumb;
-		this._thumb.style.webkitTransform = this._cssTransformVal.call(this);
-		this._thumb.style.transform = this._cssTransformVal.call(this);
+		this._thumb.style[transformString] = this._cssTransformVal.call(this);
 		this._thumb.classList.add('hide');
 	};
 
