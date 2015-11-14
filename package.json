@@ -2,7 +2,7 @@
   "name": "material-photo-gallery",
   "version": "0.0.1",
   "description": "A photo gallery inspired by Google Photos.",
-  "main": "gulpfile.js",
+  "main": "./src/js/material-photo-gallery.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

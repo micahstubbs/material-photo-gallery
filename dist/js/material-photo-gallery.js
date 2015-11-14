@@ -2898,8 +2898,9 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 	};
 
 	/**
-	 * Detect CSS Transform support
+	 * Detect CSS transform support
 	 */
+
 	var transform = false,
 	    transformString = 'transform',
 	    domPrefixes = 'Webkit Moz ms'.split(' '),
@@ -2918,6 +2919,26 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 	    }
 	  }
 	}
+
+	/**
+	 * Detect transitionend event support
+	 */
+
+	var transitions = {
+	    'transition': 'transitionend',
+	    'WebkitTransition': 'webkitTransitionEnd',
+	    'MozTransition': 'transitionend',
+	    'OTransition': 'otransitionend'
+	  },
+	  transitionendString,
+	  elem = document.createElement('div');
+	 
+  for (var t in transitions) {
+    if (typeof elem.style[t] !== 'undefined') {
+      transitionendString = transitions[t];
+      break;
+    }
+  }
 
 	/**
 	 * Css class names stored as strings.
@@ -3195,12 +3216,10 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 
 			this._fullImgOpen = true;
 
-			this._thumb.removeEventListener('webkitTransitionend', complete);
-			this._thumb.removeEventListener('transitionend', complete);
+			this._thumb.removeEventListener(transitionendString, complete);
 		}.bind(this);
 
-		this._thumb.addEventListener('webkitTransitionend', complete);
-		this._thumb.addEventListener('transitionend', complete);
+		this._thumb.addEventListener(transitionendString, complete);
 	};
 
 	/**
