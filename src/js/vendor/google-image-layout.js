@@ -99,6 +99,8 @@
 			elem = nodes[i];
 			GoogleImageLayout.align(elem);
 		}
+
+		if (opts.after) opts.after();
 	};
 
 	GoogleImageLayout.align = function(elem) {

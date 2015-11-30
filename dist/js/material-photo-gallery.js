@@ -989,7 +989,7 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 	var Gallery = function(element) {
 		this._element = element;
 		this._layout();
-		this.init();
+		// this.init();
 	};
 
 	/**
@@ -1035,6 +1035,21 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
     }
   }
 
+  function debounce(func, wait, immediate) {
+  	var timeout;
+  	return function() {
+  		var context = this, args = arguments;
+  		var later = function() {
+  			timeout = null;
+  			if (!immediate) func.apply(context, args);
+  		};
+  		var callNow = immediate && !timeout;
+  		clearTimeout(timeout);
+  		timeout = setTimeout(later, wait);
+  		if (callNow) func.apply(context, args);
+  	};
+  }
+
 	/**
 	 * Css class names stored as strings.
 	 *
@@ -1058,6 +1073,7 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 	 */
 
 	Gallery.prototype._layout = function() {
+		var gallery = this;
 		var imgLoad = imagesLoaded(document.querySelector('.google-image-layout'));
 
 		imgLoad.on('progress', function(instance, image) {
@@ -1066,7 +1082,11 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 		});
 
 		imgLoad.on('done', function(instance) {
-		  var g = new GoogleImageLayout().init();
+		  var g = new GoogleImageLayout().init({
+		  	after: function() {
+		  		gallery.init();
+		  	}
+		  });
 		});
 
 		window.onresize = function() {
@@ -1145,7 +1165,28 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 
 		// Add click event to prev button.
 		this._prevBtn.addEventListener('click', this._handlePrev.bind(this));
+
+		window.addEventListener('scroll', this._handleScroll.bind(this));
 	};
+
+	Gallery.prototype._handleScroll = debounce(function() {
+
+		this._fullImgsTransforms = [];
+		
+		for (var i = 0, ii = this._thumbs.length; i < ii; i++) {
+			var size = {
+				width: this._fullImgDimensions[i].width,
+				height: this._fullImgDimensions[i].height,
+				left: this._fullImgDimensions[i].left,
+				top: this._fullImgDimensions[i].top
+			};
+			
+			var transform = this._transformFullImg(this._fullImgs[i], this._thumbs[i], size);
+			this._fullImgs[i].style.transform = transform;
+			this._fullImgsTransforms.push(transform);
+		}
+	
+	}, 0);
 
 	/**
 	 * Load the full size images from the 'data-full' attribute.
@@ -1173,9 +1214,40 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 
 			// Append full size image to full size image container.
 			this._fullBox.appendChild(img);
+
 		}
 
-		this._fullImgsLoaded = true;
+		this._loadFullImgsDone.call(this);		
+	};
+
+	Gallery.prototype._loadFullImgsDone = function() {
+
+		var imgLoad = imagesLoaded(this._fullBox);
+		imgLoad.on('done', function(instance) {
+			var imgArr = instance.images;
+			
+			this._fullImgs = [];
+			this._fullImgDimensions = [];
+			this._fullImgsTransforms = [];
+
+			for (var i = 0, ii = imgArr.length; i < ii; i++) {
+				var rect = imgArr[i].img.getBoundingClientRect();
+				this._fullImgs.push(imgArr[i].img);
+				this._centerFullImgs.call(this, imgArr[i].img, i);
+				this._fullImgDimensions.push(rect);
+			}
+			
+			this._fullImgsLoaded = true;
+		}.bind(this));
+	};
+
+	Gallery.prototype._centerFullImgs = function(img, i) {
+		var transform = this._transformFullImg(img, this._thumbs[i]);
+		this._fullImgsTransforms.push(transform);
+		
+		img.style.marginTop = -img.height / 2 + 'px';
+		img.style.marginLeft = -img.width / 2 + 'px';
+		img.style.transform = transform;
 	};
 
 	/**
@@ -1185,20 +1257,27 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 	 * @private
 	 */
 
-	Gallery.prototype._cssTransformVal = function() {
+	Gallery.prototype._transformFullImg = function(fullImg, thumb, fullImgSize) {
 
-		var ww = window.innerWidth,
-				wh = window.innerHeight,
-				wcx = ww / 2,
-				wcy = wh /2;
+		var scaleX, scaleY, transX, transY;
 
-		var elem1 = this._fullImg.getBoundingClientRect(),
-				elem2 = this._thumb.getBoundingClientRect();
+		var fullImg = fullImg.getBoundingClientRect(),
+				thumb = thumb.getBoundingClientRect();
 
-		var scaleX = (elem1.width / elem2.width).toFixed(3),
-				scaleY = (elem1.height / elem2.height).toFixed(3),
-				transX = Math.round( (wcx) - (elem2.left) - (elem2.width / 2) ),
-				transY = Math.round( (wcy) - (elem2.top) - (elem2.height / 2) );
+		if (fullImgSize) {
+			scaleX = (thumb.width / fullImgSize.width).toFixed(3),
+			scaleY = (thumb.height / fullImgSize.height).toFixed(3);
+
+			transX = thumb.left - fullImgSize.left + (fullImgSize.width / 2),
+			transY = thumb.top - fullImgSize.top + (fullImgSize.height / 2);
+
+		} else {
+			scaleX = (thumb.width / fullImg.width).toFixed(3),
+			scaleY = (thumb.height / fullImg.height).toFixed(3);
+
+			transX = thumb.left - fullImg.left + (fullImg.width / 2),
+			transY = thumb.top - fullImg.top + (fullImg.height / 2);
+		}
 
 		var transform = 'translate(' + transX + 'px,' + transY + 'px) scale(' + scaleX + ',' + scaleY + ')';
 
@@ -1213,8 +1292,9 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 	 */
 
 	Gallery.prototype._handleThumbHover = function(event) {
-		if (this._fullImgsLoaded && !this._fullImgOpen)
+		if (this._fullImgsLoaded && !this._fullImgOpen) {
 			this._transformThumbSetup.call(this, event);
+		}
 	};
 
 	/**
@@ -1226,14 +1306,11 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 
 	Gallery.prototype._handleThumbClick = function(event) {
 
-		if (this._setupComplete && this._fullImgsLoaded & !this._fullImgOpen) {
-			this._activateThumb.call(this); 
+		if (this._fullImgsLoaded && !this._fullImgOpen) {
+			this._activateFullImg.call(this);
 			this._activateControls.call(this);
 			this._activateFullBox.call(this);
-
 			this._disableScroll();
-		} else {
-			this._transformThumbSetup.call(this, event, this._handleThumbClick.bind(this));
 		}
 	};
 
@@ -1255,67 +1332,18 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 		this._thumbIndex = this._thumbs.indexOf(this._thumb);
 
 		// The full size image of that thumbnail.
-		this._fullImg = this._fullBox.querySelectorAll('.' + this._cssClasses.FULL_IMG)[this._thumbIndex];
+		this._fullImg = this._fullImgs[this._thumbIndex];
 
-		// Do the math for the CSS transform and cache the value.
-		this._thumbTransformVal = this._cssTransformVal.call(this);
+		if (fn) fn();	
 
-		this._setupComplete = true;
-
-		if (fn) fn();
 	};
 
-	/**
-	 * Animate the thumbnail and add the active class to it.
-	 *
-	 * @private
-	 */
-
-	Gallery.prototype._activateThumb = function() {
-
-		if (this._thumbTransformVal && this._fullImgsLoaded) {
-
-			this._thumbTransformComplete.call(this);
-
-			var animation = function() {
-
-				// Increase z-index on thumbnail.
-				this._thumb.classList.add('active');
-
-				// Transform thumbnail to same size and position as full size image.
-				this._thumb.style[transformString] = this._thumbTransformVal;
-
-			}.bind(this);
-
-			window.requestAnimationFrame(animation);
-		}
+	Gallery.prototype._activateFullImg = function() {
+		this._fullImg.classList.add('active');
+		this._fullImg.style[transformString] = 'translate3d(0,0,0)';
+		this._fullImgOpen = true;
 	};
 
-	/**
-	 * When the thumbnail finishes animating the full size image is revealed and
-	 * the thumbnail is hidden.
-	 *
-	 * @private
-	 */
-
-	Gallery.prototype._thumbTransformComplete = function() {
-		
-		var complete = function() {
-
-			// Show the full size image.
-			this._fullImg.classList.add('active');
-
-			// Hide the thumbnail.
-			this._thumb.classList.add('hide');
-			this._thumb.classList.remove('active');
-
-			this._fullImgOpen = true;
-
-			this._thumb.removeEventListener(transitionendString, complete);
-		}.bind(this);
-
-		this._thumb.addEventListener(transitionendString, complete);
-	};
 
 	/**
 	 * Show the fullBox.
@@ -1349,41 +1377,24 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 		}
 	};
 
-	/**
-	 * Hide the full size image, fullBox, controls, and reset the thumbnail back
-	 * to its original size and position.
-	 *
-	 * @private
-	 */
-
 	Gallery.prototype._closeFullImgAndResetThumb = function() {
 
 		var animation = function() {
 
-			// Make the thumbnail visible again
-			this._thumb.classList.add('active');
-			this._thumb.classList.remove('hide');
+			this._fullBox.classList.remove('active');
+			this._controls.classList.remove('active');
+			this._fullImg.style.transform = this._fullImgsTransforms[this._thumbIndex];
 
-			setTimeout(function() {
+			this._fullImg.addEventListener(transitionendString, fullImgTransEnd.bind(this));
 
-				// Hide full size image
+			function fullImgTransEnd() {
 				this._fullImg.classList.remove('active');
-
-				// Hide full size image container
-				this._fullBox.classList.remove('active');
-				this._controls.classList.remove('active');
-
-				// Make thumbnail go back to it's original size and shape
-				this._thumb.style[transformString] = 'translate3d(0, 0, 0)';
-
-				// Remove the high z-index.
-				this._thumb.classList.remove('active');
-
+				this._fullImg.removeEventListener(transitionendString, fullImgTransEnd);
 				this._fullImgOpen = false;
-				this._setupComplete = false;
+			}
 
-				this._enableScroll();
-			}.bind(this), 100);
+			this._enableScroll();
+			
 		}.bind(this);
 
 		window.requestAnimationFrame(animation);
@@ -1586,6 +1597,8 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 			elem = nodes[i];
 			GoogleImageLayout.align(elem);
 		}
+
+		if (opts.after) opts.after();
 	};
 
 	GoogleImageLayout.align = function(elem) {

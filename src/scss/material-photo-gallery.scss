@@ -41,32 +41,40 @@ $duration: .5s;
 		z-index: 10;
 		top: 0;
 		left: 0;
+		right: 0;
+		bottom: 0;
 		width: 100%;
-		height: 100%;
-		background: rgba(black, 0.95);
+		height: 100vh;
+		background: rgba(black, 0);
 		visibility: hidden;
-		opacity: 0;
-		transition: all $duration cubic-bezier(0.23, 1, 0.32, 1);
+		transition:
+			background .5s cubic-bezier(0.23, 1, 0.32, 1),
+			visibility .01s .5s linear;
 		will-change: opacity, visibility;
 
 		&.active {
+			transition:
+				background .5s cubic-bezier(0.23, 1, 0.32, 1),
+				visibility .01s 0s linear;
 			visibility: visible;
-			opacity: 1;
+			background: rgba(black, 0.95);
 		}
 
 		&-img {
 			position: absolute;
+			transform-origin: left top;
 			top: 50%;
 			left: 50%;
-			transform: translate(-50%, -50%);
 			max-height: 100vh;
 			max-width: 100%;
-			opacity: 0;
+			visibility: hidden;
 			z-index: 60;
-			transition: all .35s cubic-bezier(0.23, 1, 0.32, 1);
+			-webkit-filter: saturate(0%);
 
 			&.active {
-				opacity: 1;
+				visibility: visible;
+				z-index: 200;
+				transition: transform .6s cubic-bezier(0.23, 1, 0.32, 1);
 			}
 			
 			&.prev {
