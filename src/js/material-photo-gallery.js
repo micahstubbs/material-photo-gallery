@@ -36,7 +36,6 @@
 	var Gallery = function(element) {
 		this._element = element;
 		this._layout();
-		// this.init();
 	};
 
 	/**
@@ -136,9 +135,15 @@
 		  });
 		});
 
-		window.onresize = function() {
-		  var g = new GoogleImageLayout().init();
-		};
+		window.onresize = debounce(function() {
+		  var g = new GoogleImageLayout().init({
+		  	after: function() {
+		  		setTimeout(function() {
+		  			gallery._handleResize();
+		  		}, 500);
+		  	}
+		  });
+		}, 50);
 	};
 
 	/**
@@ -229,11 +234,33 @@
 			};
 			
 			var transform = this._transformFullImg(this._fullImgs[i], this._thumbs[i], size);
-			this._fullImgs[i].style.transform = transform;
+			this._fullImgs[i].style[transformString] = transform;
 			this._fullImgsTransforms.push(transform);
 		}
 	
-	}, 0);
+	}, 10);
+
+	Gallery.prototype._handleResize = function() {
+
+		this._fullImgsTransforms = [];
+
+		for (var i = 0, ii = this._fullImgs.length; i < ii; i++) {
+			this._fullImgs[i].style.marginTop = -this._fullImgs[i].height / 2 + 'px';
+			this._fullImgs[i].style.marginLeft = -this._fullImgs[i].width / 2 + 'px';
+
+			var size = {
+				width: this._fullImgDimensions[i].width,
+				height: this._fullImgDimensions[i].height,
+				left: this._fullImgDimensions[i].left,
+				top: this._fullImgDimensions[i].top
+			};
+
+			if (!this._fullImgOpen) {
+				this._fullImgs[i].removeAttribute('style');
+				this._positionFullImgs.call(this, this._fullImgs[i], i);
+			}
+		}
+	};
 
 	/**
 	 * Load the full size images from the 'data-full' attribute.
@@ -280,7 +307,7 @@
 			for (var i = 0, ii = imgArr.length; i < ii; i++) {
 				var rect = imgArr[i].img.getBoundingClientRect();
 				this._fullImgs.push(imgArr[i].img);
-				this._centerFullImgs.call(this, imgArr[i].img, i);
+				this._positionFullImgs.call(this, imgArr[i].img, i);
 				this._fullImgDimensions.push(rect);
 			}
 			
@@ -288,13 +315,13 @@
 		}.bind(this));
 	};
 
-	Gallery.prototype._centerFullImgs = function(img, i) {
+	Gallery.prototype._positionFullImgs = function(img, i) {
 		var transform = this._transformFullImg(img, this._thumbs[i]);
 		this._fullImgsTransforms.push(transform);
 		
 		img.style.marginTop = -img.height / 2 + 'px';
 		img.style.marginLeft = -img.width / 2 + 'px';
-		img.style.transform = transform;
+		img.style[transformString] = transform;
 	};
 
 	/**
@@ -308,20 +335,18 @@
 
 		var scaleX, scaleY, transX, transY;
 
-		var fullImg = fullImg.getBoundingClientRect(),
-				thumb = thumb.getBoundingClientRect();
+		fullImg = fullImg.getBoundingClientRect(),
+		thumb = thumb.getBoundingClientRect();
 
 		if (fullImgSize) {
 			scaleX = (thumb.width / fullImgSize.width).toFixed(3),
-			scaleY = (thumb.height / fullImgSize.height).toFixed(3);
-
+			scaleY = (thumb.height / fullImgSize.height).toFixed(3),
 			transX = thumb.left - fullImgSize.left + (fullImgSize.width / 2),
 			transY = thumb.top - fullImgSize.top + (fullImgSize.height / 2);
 
 		} else {
 			scaleX = (thumb.width / fullImg.width).toFixed(3),
-			scaleY = (thumb.height / fullImg.height).toFixed(3);
-
+			scaleY = (thumb.height / fullImg.height).toFixed(3),
 			transX = thumb.left - fullImg.left + (fullImg.width / 2),
 			transY = thumb.top - fullImg.top + (fullImg.height / 2);
 		}
@@ -353,11 +378,13 @@
 
 	Gallery.prototype._handleThumbClick = function(event) {
 
-		if (this._fullImgsLoaded && !this._fullImgOpen) {
+		if (this._setupComplete && this._fullImgsLoaded && !this._fullImgOpen) {
 			this._activateFullImg.call(this);
 			this._activateControls.call(this);
 			this._activateFullBox.call(this);
 			this._disableScroll();
+		} else {
+			this._transformThumbSetup.call(this, event, this._handleThumbClick);
 		}
 	};
 
@@ -372,6 +399,8 @@
 
 	Gallery.prototype._transformThumbSetup = function(event, fn) {
 
+		this._setupComplete = false;
+
 		// Cache the thumb being hovered over.
 		this._thumb = event.target;
 
@@ -380,6 +409,8 @@
 
 		// The full size image of that thumbnail.
 		this._fullImg = this._fullImgs[this._thumbIndex];
+
+		this._setupComplete = true;
 
 		if (fn) fn();	
 
@@ -420,25 +451,25 @@
 
 	Gallery.prototype._handleClose = function() {
 		if (this._fullImgOpen) {
-			this._closeFullImgAndResetThumb.call(this);
+			this._closeFullImg.call(this);
 		}
 	};
 
-	Gallery.prototype._closeFullImgAndResetThumb = function() {
+	Gallery.prototype._closeFullImg = function() {
 
 		var animation = function() {
-
 			this._fullBox.classList.remove('active');
 			this._controls.classList.remove('active');
-			this._fullImg.style.transform = this._fullImgsTransforms[this._thumbIndex];
+			this._fullImg.style[transformString] = this._fullImgsTransforms[this._thumbIndex];
 
-			this._fullImg.addEventListener(transitionendString, fullImgTransEnd.bind(this));
-
-			function fullImgTransEnd() {
+			var fullImgTransEnd = function() {
 				this._fullImg.classList.remove('active');
 				this._fullImg.removeEventListener(transitionendString, fullImgTransEnd);
 				this._fullImgOpen = false;
-			}
+			}.bind(this);
+
+			this._fullImg.addEventListener(transitionendString, fullImgTransEnd);
+
 
 			this._enableScroll();
 			
@@ -481,32 +512,24 @@
 
 	Gallery.prototype._changeImg = function(dir) {
 
-		// The full size image we are changing to
+		this._thumbIndex = this._fullImgs.indexOf(this._fullImg);
+		dir === 'next' ? this._thumbIndex += 1 : this._thumbIndex -= 1;
+
 		this._newFullImg = dir === 'next' ? this._fullImg.nextElementSibling : this._fullImg.previousElementSibling;
 
-		// The thumbnail we are changing to
-		this._newThumb = dir === 'next' ? this._thumb.nextElementSibling : this._thumb.previousElementSibling;
-
-		// Go back to the start when we reach the last image, or go to the end when we reach the first image
 		if (!this._newFullImg || this._newFullImg.nodeName !== 'IMG') {
-			this._newFullImg = dir === 'next' ? this._newFullImg = this._fullBox.querySelectorAll('.' + this._cssClasses.FULL_IMG)[0] : this._newFullImg = this._fullBox.querySelectorAll('.' + this._cssClasses.FULL_IMG)[this._fullBox.querySelectorAll('.' + this._cssClasses.FULL_IMG).length - 1];
-
-			this._newThumb = dir === 'next' ? this._thumbs[0] : this._thumbs[this._thumbs.length - 1];
+			this._newFullImg = dir === 'next' ? this._newFullImg = this._fullImgs[0] : this._newFullImg = this._fullImgs[this._fullImgs.length - 1];
+			dir === 'next' ? this._thumbIndex = 0 : this._thumbIndex = this._fullImgs.length - 1;
 		}
 
-		// Hide the old full size image and show the new one
+		this._newFullImg.style[transformString] = 'translate3d(0,0,0)';
 		this._fullImg.classList.remove('active');
+		this._fullImg.style[transformString] = this._fullImgsTransforms[this._thumbIndex];
+
 		this._fullImg = this._newFullImg;
 		this._fullImg.classList.add('active');
 
-		// Hide the old thumbnail and reset its css transforms
-		this._thumb.classList.remove('active', 'hide');
-		this._thumb.style[transformString] = 'translate3d(0, 0, 0)';
-
-		// Set the current thumbnail to the new one and apply the css transforms to it
-		this._thumb = this._newThumb;
-		this._thumb.style[transformString] = this._cssTransformVal.call(this);
-		this._thumb.classList.add('hide');
+		
 	};
 
 	/**
