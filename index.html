@@ -1,22 +1,26 @@
 <html>
 	<head>
+		<title>Material Photo Gallery</title>
+		<link href='https://fonts.googleapis.com/css?family=Roboto+Mono:400,300' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css">
 		<link rel="stylesheet" href="./dist/css/material-photo-gallery.css">
 
 		<style>
 			/* DEMO */
 			body {
-				background: #212121;
+				background: #fefefe;
 				color: white;
 				-webkit-font-smoothing: antialiased;
 			}
 
 			h2 {
-				font-family: 'Roboto';
+				font-family: 'Roboto Mono';
 				font-weight: 300;
-				margin: 3vh 3vw;
+				margin: 4vh 4vw;
 				letter-spacing: 3px;
+				color: grey;
 				text-transform: uppercase;
+				text-align: center;
 			}
 		</style>
 	</head>
@@ -26,15 +30,15 @@
 		<div class="m-p-g">
 			<!-- GALLERY THUMBNAILS -->
 			<div class="m-p-g__thumbs google-image-layout" data-google-image-layout data-max-height="350">
-					<img src="http://unsplash.it/600/400?image=198" data-full="http://unsplash.it/1200/800?image=198" class="m-p-g__thumbs-img" />
-					<img src="http://unsplash.it/640/450?image=202" data-full="http://unsplash.it/1280/900?image=202" class="m-p-g__thumbs-img" />
-					<img src="http://unsplash.it/550/420?image=420" data-full="http://unsplash.it/1100/840?image=420" class="m-p-g__thumbs-img" />
-					<img src="http://unsplash.it/650/450?image=491" data-full="http://unsplash.it/1300/900?image=491" class="m-p-g__thumbs-img" />
-					<img src="http://unsplash.it/600/350?image=700" data-full="http://unsplash.it/1200/700?image=700" class="m-p-g__thumbs-img" />
-					<img src="http://unsplash.it/560/500?image=520" data-full="http://unsplash.it/1120/1000?image=520" class="m-p-g__thumbs-img" />
+					<img src="http://unsplash.it/600/400?image=210" data-full="http://unsplash.it/1200/800?image=210" class="m-p-g__thumbs-img" />
+					<img src="http://unsplash.it/640/450?image=204" data-full="http://unsplash.it/1280/900?image=204" class="m-p-g__thumbs-img" />
+					<img src="http://unsplash.it/550/420?image=422" data-full="http://unsplash.it/1100/840?image=422" class="m-p-g__thumbs-img" />
+					<img src="http://unsplash.it/650/450?image=493" data-full="http://unsplash.it/1300/900?image=493" class="m-p-g__thumbs-img" />
+					<img src="http://unsplash.it/600/350?image=723" data-full="http://unsplash.it/1200/700?image=723" class="m-p-g__thumbs-img" />
+					<img src="http://unsplash.it/560/500?image=525" data-full="http://unsplash.it/1120/1000?image=525" class="m-p-g__thumbs-img" />
 					<img src="http://unsplash.it/670/410?image=401" data-full="http://unsplash.it/1340/820?image=401" class="m-p-g__thumbs-img" />
-					<img src="http://unsplash.it/620/340?image=622" data-full="http://unsplash.it/1240/680?image=622" class="m-p-g__thumbs-img" />
-					<img src="http://unsplash.it/790/390?image=329" data-full="http://unsplash.it/1580/780?image=329" class="m-p-g__thumbs-img" />
+					<img src="http://unsplash.it/620/340?image=623" data-full="http://unsplash.it/1240/680?image=623" class="m-p-g__thumbs-img" />
+					<img src="http://unsplash.it/790/390?image=339" data-full="http://unsplash.it/1580/780?image=339" class="m-p-g__thumbs-img" />
 			</div>
 
 			<div class="m-p-g__fullscreen">
@@ -44,13 +48,19 @@
 			<!-- GALLERY CONTROLS -->
 			<div class="m-p-g__controls">
 				<button type="button" class="m-p-g__controls-close">
-					<svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+					<span class="m-p-g__btn">
+						<svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>
+					</span>
 				</button>
 				<button type="button" class="m-p-g__controls-arrow m-p-g__controls-arrow--prev">
-					<svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+					<span class="m-p-g__btn">
+						<svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+					</span>
 				</button>
 				<button type="button" class="m-p-g__controls-arrow m-p-g__controls-arrow--next">
-					<svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+					<span class="m-p-g__btn">
+						<svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+					</span>
 				</button>
 			</div>
 		</div>

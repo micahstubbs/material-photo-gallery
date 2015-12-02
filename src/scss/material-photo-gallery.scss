@@ -1,6 +1,8 @@
 $duration: .5s;
 
 .m-p-g {
+	max-width: 800px;
+	margin: 0 auto;
 	
 	&__thumbs {
 		
@@ -31,7 +33,7 @@ $duration: .5s;
 			}
 			
 			&:hover {
-				filter: brightness(100%);
+				filter: brightness(110%);
 			}
 		}
 	}
@@ -48,19 +50,20 @@ $duration: .5s;
 		background: rgba(black, 0);
 		visibility: hidden;
 		transition:
-			background .5s cubic-bezier(0.23, 1, 0.32, 1),
+			background .25s ease-out,
 			visibility .01s .5s linear;
 		will-change: opacity, visibility;
 
 		&.active {
 			transition:
-				background .5s cubic-bezier(0.23, 1, 0.32, 1),
+				background .25s ease-out,
 				visibility .01s 0s linear;
 			visibility: visible;
 			background: rgba(black, 0.95);
 		}
 
 		&-img {
+			pointer-events: none;
 			position: absolute;
 			transform-origin: left top;
 			top: 50%;
@@ -69,7 +72,7 @@ $duration: .5s;
 			max-width: 100%;
 			visibility: hidden;
 			z-index: 60;
-			// -webkit-filter: saturate(0%);
+			-webkit-filter: saturate(0%);
 
 			&.active {
 				visibility: visible;
@@ -153,6 +156,41 @@ $duration: .5s;
 			z-index: 5;
 			cursor: pointer;
 			-webkit-tap-highlight-color: rgba(black, 0);
+		}
+	}
+
+	&__btn {
+		$size: 50px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: $size;
+		height: $size;
+		border-radius: 50%;
+		background: rgba(white, 0.07);
+		transition: all .25s ease-out;
+
+		&:hover {
+			background: rgba(white, 0.15);
+		}
+	}
+
+	&__alertBox {
+		position: fixed;
+		z-index: 999;
+		max-width: 700px;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		background: white;
+		padding: 25px;
+		border-radius: 3px;
+		text-align: center;
+		box-shadow: 0 6px 12px rgba(0, 0, 0, 0.23), 0 10px 40px rgba(0, 0, 0, 0.19);
+		color: grey;
+
+		h2 {
+			color: red;
 		}
 	}
 }
