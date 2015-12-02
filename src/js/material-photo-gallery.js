@@ -162,7 +162,7 @@
 		  	after: function() {
 		  		setTimeout(function() {
 		  			gallery._handleResize();
-		  		}, 500);
+		  		}, 350);
 		  	}
 		  });
 		}, 25);
@@ -244,46 +244,11 @@
 	};
 
 	Gallery.prototype._handleScroll = debounce(function() {
-
-		this._fullImgsTransforms = [];
-		
-		for (var i = 0, ii = this._thumbs.length; i < ii; i++) {
-			var size = {
-				width: this._fullImgDimensions[i].width,
-				height: this._fullImgDimensions[i].height,
-				left: this._fullImgDimensions[i].left,
-				top: this._fullImgDimensions[i].top
-			};
-
-			var transform = this._transformFullImg(this._fullImgs[i], this._thumbs[i], size);
-			this._fullImgs[i].removeAttribute('style');
-			this._positionFullImgs.call(this, this._fullImgs[i], i);
-		}
-	
-	}, 10);
+		this._resetFullImg.call(this);	
+	}, 25);
 
 	Gallery.prototype._handleResize = function() {
-
-		this._fullImgsTransforms = [];
-
-		for (var i = 0, ii = this._fullImgs.length; i < ii; i++) {
-			
-			var size = {
-				width: this._fullImgDimensions[i].width,
-				height: this._fullImgDimensions[i].height,
-				left: this._fullImgDimensions[i].left,
-				top: this._fullImgDimensions[i].top
-			};
-
-			if (i === this._thumbIndex && this._fullImgOpen) {
-				this._fullImgs[i].removeAttribute('style');
-				this._positionFullImgs.call(this, this._fullImgs[i], i, false);
-			} else {
-				this._fullImgs[i].removeAttribute('style');
-				this._positionFullImgs.call(this, this._fullImgs[i], i);
-			}
-				
-		}
+		this._resetFullImg.call(this);
 	};
 
 	/**
@@ -380,6 +345,29 @@
 		var transform = 'translate(' + transX + 'px,' + transY + 'px) scale(' + scaleX + ',' + scaleY + ')';
 
 		return transform;
+	};
+
+	Gallery.prototype._resetFullImg = function() {
+
+		this._fullImgsTransforms = [];
+
+		for (var i = 0, ii = this._fullImgs.length; i < ii; i++) {
+			
+			var size = {
+				width: this._fullImgDimensions[i].width,
+				height: this._fullImgDimensions[i].height,
+				left: this._fullImgDimensions[i].left,
+				top: this._fullImgDimensions[i].top
+			};
+
+			if (i === this._thumbIndex && this._fullImgOpen) {
+				this._fullImgs[i].removeAttribute('style');
+				this._positionFullImgs.call(this, this._fullImgs[i], i, false);
+			} else {
+				this._fullImgs[i].removeAttribute('style');
+				this._positionFullImgs.call(this, this._fullImgs[i], i);
+			}
+		}
 	};
 
 	/**

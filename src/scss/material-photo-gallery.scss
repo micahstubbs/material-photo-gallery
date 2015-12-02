@@ -71,12 +71,9 @@ $duration: .5s;
 			max-height: 100vh;
 			max-width: 100%;
 			visibility: hidden;
-			z-index: 60;
-			-webkit-filter: saturate(0%);
 
 			&.active {
 				visibility: visible;
-				z-index: 200;
 				transition: transform .6s cubic-bezier(0.23, 1, 0.32, 1);
 			}
 			
