@@ -1,5 +1,5 @@
 # Material Photo Gallery
-A photo gallery inspired by Google Photos.
+A vanilla javascript photo gallery plugin inspired by Google Photos.
 
 ## Demo
 <a href="//ettrics.github.io/material-photo-gallery/">View demo</a>
