@@ -948,6 +948,8 @@ if ( typeof define === 'function' && define.amd ) {
 (function(root, factory) {
 	if (typeof exports === 'object') {
 		module.exports = factory();
+	} else {
+		root.CreateControls = factory();
 	}
 })(this, function() {
 

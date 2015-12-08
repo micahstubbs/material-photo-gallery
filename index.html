@@ -12,21 +12,41 @@
 				color: white;
 				-webkit-font-smoothing: antialiased;
 				-moz-osx-font-smoothing: grayscale;
+				text-align: center;
+				font-family: 'Roboto Mono';
 			}
 
 			h2 {
-				font-family: 'Roboto Mono';
 				font-weight: 300;
 				margin: 4vh 4vw;
 				letter-spacing: 3px;
 				color: grey;
 				text-transform: uppercase;
-				text-align: center;
+			}
+
+			.demo-btn {
+				display: inline-block;
+				margin: 0 2.5px 4vh 2.5px;
+				text-decoration: none;
+				color: grey;
+				padding: 15px;
+				line-height: 1;
+				min-width: 140px;
+				background: rgba(0,0,0, 0.07);
+				border-radius: 6px;
+			}
+
+			.demo-btn:hover {
+				background: rgba(0,0,0,0.12);
 			}
 		</style>
 	</head>
 	<body>
 		<h2>Material Photo Gallery</h2>
+		<p>
+			<a href="https://github.com/ettrics/material-photo-gallery" class="demo-btn">Documentation</a>
+			<a href="https://github.com/ettrics/material-photo-gallery/archive/master.zip" class="demo-btn" download="material-photo-gallery">Download</a>
+		</p>
 
 		<div class="m-p-g">
 			<div class="m-p-g__thumbs" data-google-image-layout data-max-height="350">

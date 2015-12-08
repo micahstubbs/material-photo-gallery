@@ -11,7 +11,7 @@ A photo gallery inspired by Google Photos.
 npm install material-photo-gallery --save-dev
 ```
 
-### Usage
+#### Usage
 ```js
 var MaterialPhotoGallery = require('material-photo-gallery');
 var elem = document.querySelector('.m-p-g');
@@ -28,7 +28,7 @@ var gallery = new MaterialPhotoGallery(elem);
 <link rel="stylesheet" href="material-photo-gallery.css" />
 ```
 
-### HTML
+#### HTML
 ``` html
 <div class="m-p-g">
 
@@ -41,7 +41,9 @@ var gallery = new MaterialPhotoGallery(elem);
 </div>
 ```
 
-### Initialize Plugin
+Specify the path to the full size images with the `data-full` attribute on the thumbnail images.
+
+#### Initialize Plugin
 ``` js
 // Select gallery element.
 var elem = document.querySelector('.m-p-g');
