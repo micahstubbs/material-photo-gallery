@@ -945,12 +945,82 @@ if ( typeof define === 'function' && define.amd ) {
 }.call(this));
 
 },{}],4:[function(require,module,exports){
+(function(root, factory) {
+	if (typeof exports === 'object') {
+		module.exports = factory();
+	}
+})(this, function() {
+
+	'use strict';
+
+	var CreateControls = {};
+
+	var _cssClasses = {
+		CONTROLS: 'm-p-g__controls',
+		CONTROLS_CLOSE: 'm-p-g__controls-close',
+		CONTROLS_ARROW: 'm-p-g__controls-arrow',
+		CONTROLS_NEXT: 'm-p-g__controls-arrow--next',
+		CONTROLS_PREV: 'm-p-g__controls-arrow--prev',
+		CONTROLS_BTN: 'm-p-g__btn'
+	};
+
+	var controlsCloseSvg = '<svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>';
+
+	var controlsPrevSvg = '<svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>';
+
+	var controlsNextSvg = '<svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>';
+
+	function _createEl(el, className, attr) {
+		var element = document.createElement(el);
+		if (className && typeof className === 'object') {
+			className.forEach(function(c) {
+				element.classList.add(c);
+			});
+		} else {
+			element.classList.add(className);
+		}
+		return element;
+	}
+
+	function init() {
+		var controls = _createEl('div', _cssClasses.CONTROLS);
+		var close = _createEl('button', _cssClasses.CONTROLS_CLOSE);
+		var next = _createEl('button', [_cssClasses.CONTROLS_ARROW, _cssClasses.CONTROLS_NEXT]);
+		var prev = _createEl('button', [_cssClasses.CONTROLS_ARROW, _cssClasses.CONTROLS_PREV]);
+
+		var childrenControls = [close, next, prev];
+
+		for (var i = 0; i < childrenControls.length; i++) {
+			controls.appendChild(childrenControls[i]);
+		}
+
+		var closeBtn = _createEl('span', _cssClasses.CONTROLS_BTN);
+		var nextBtn = _createEl('span', _cssClasses.CONTROLS_BTN);
+		var prevBtn = _createEl('span', _cssClasses.CONTROLS_BTN);
+
+		closeBtn.innerHTML = controlsCloseSvg;
+		nextBtn.innerHTML = controlsNextSvg;
+		prevBtn.innerHTML = controlsPrevSvg;
+
+		close.appendChild(closeBtn);
+		next.appendChild(nextBtn);
+		prev.appendChild(prevBtn);
+
+		return controls;
+	}
+
+	CreateControls.init = init;
+
+	return CreateControls;
+
+});
+},{}],5:[function(require,module,exports){
 // Expose Plugin to Global Scope
 
 var MaterialPhotoGallery = require('./material-photo-gallery');
 window.MaterialPhotoGallery = MaterialPhotoGallery;
 
-},{"./material-photo-gallery":5}],5:[function(require,module,exports){
+},{"./material-photo-gallery":6}],6:[function(require,module,exports){
 /**
  *
  * Material Photo Gallery v0.0.1
@@ -967,7 +1037,8 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 	} else if (typeof exports === 'object') {
 		module.exports = factory(
 			require('imagesLoaded'),
-			require('./vendor/google-image-layout')
+			require('./vendor/google-image-layout'),
+			require('./create-controls')
 		);
 	} else {
 		root.Gallery = factory(
@@ -975,7 +1046,7 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 			window.GoogleImageLayout
 		);
 	}
-})(this, function(imagesLoaded, GoogleImageLayout) {
+})(this, function(imagesLoaded, GoogleImageLayout, CreateControls) {
 
 	'use strict';
 
@@ -1073,7 +1144,7 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 
 	Gallery.prototype._layout = function() {
 		var gallery = this;
-		var imgLoad = imagesLoaded(document.querySelector('.google-image-layout'));
+		var imgLoad = imagesLoaded(document.querySelector('div[data-google-image-layout]'));
 
 		imgLoad.on('progress', function(instance, image) {
 		  image.img.setAttribute('data-width', image.img.offsetWidth);
@@ -1115,7 +1186,7 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 		  	after: function() {
 		  		setTimeout(function() {
 		  			gallery._handleResize();
-		  		}, 350);
+		  		}, 500);
 		  	}
 		  });
 		}, 25);
@@ -1126,6 +1197,9 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 	 */
 
 	Gallery.prototype.init = function() {
+
+		var controls = CreateControls.init();
+		this._element.appendChild(controls);
 
 		// Root element.
 		this._gallery = this._element;
@@ -1144,6 +1218,7 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 
 		// Container of controls.
 		this._controls = this._gallery.querySelector('.' + this._cssClasses.CONTROLS);
+		// this._controls = CreateControls.init();
 
 		// Close control button.
 		this._closeBtn = this._controls.querySelector('.' + this._cssClasses.CONTROLS_CLOSE);
@@ -1393,9 +1468,16 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 	};
 
 	Gallery.prototype._activateFullImg = function() {
+		this._thumb.classList.add('hide');
 		this._fullImg.classList.add('active');
 		this._fullImg.style[transformString] = 'translate3d(0,0,0)';
 		this._fullImgOpen = true;
+
+		this._fullImgs.forEach(function(img) {
+			if (!img.classList.contains('active')) {
+				img.classList.add('almost-active');
+			}
+		});
 	};
 
 
@@ -1437,17 +1519,20 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 			this._fullBox.classList.remove('active');
 			this._controls.classList.remove('active');
 			this._fullImg.style[transformString] = this._fullImgsTransforms[this._thumbIndex];
+			this._thumb.classList.remove('hide');
+
+			this._fullImgs.forEach(function(img) {
+				img.classList.remove('almost-active');
+			});
 
 			var fullImgTransEnd = function() {
 				this._fullImg.classList.remove('active');
 				this._fullImg.removeEventListener(transitionendString, fullImgTransEnd);
-				// this._thumbIndex = '';
+
 				this._fullImgOpen = false;
 			}.bind(this);
 
 			this._fullImg.addEventListener(transitionendString, fullImgTransEnd);
-
-
 			this._enableScroll();
 			
 		}.bind(this);
@@ -1505,8 +1590,6 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 
 		this._fullImg = this._newFullImg;
 		this._fullImg.classList.add('active');
-
-		
 	};
 
 	/**
@@ -1542,7 +1625,7 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 });
 
 
-},{"./vendor/google-image-layout":6,"imagesLoaded":1}],6:[function(require,module,exports){
+},{"./create-controls":4,"./vendor/google-image-layout":7,"imagesLoaded":1}],7:[function(require,module,exports){
 /**
  *
  * Google Image Layout v0.0.1
@@ -1676,4 +1759,4 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
 
 	return GoogleImageLayout;
 });
-},{}]},{},[4]);
+},{}]},{},[5]);

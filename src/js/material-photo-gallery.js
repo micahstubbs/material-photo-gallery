@@ -14,7 +14,8 @@
 	} else if (typeof exports === 'object') {
 		module.exports = factory(
 			require('imagesLoaded'),
-			require('./vendor/google-image-layout')
+			require('./vendor/google-image-layout'),
+			require('./create-controls')
 		);
 	} else {
 		root.Gallery = factory(
@@ -22,7 +23,7 @@
 			window.GoogleImageLayout
 		);
 	}
-})(this, function(imagesLoaded, GoogleImageLayout) {
+})(this, function(imagesLoaded, GoogleImageLayout, CreateControls) {
 
 	'use strict';
 
@@ -120,7 +121,7 @@
 
 	Gallery.prototype._layout = function() {
 		var gallery = this;
-		var imgLoad = imagesLoaded(document.querySelector('.google-image-layout'));
+		var imgLoad = imagesLoaded(document.querySelector('div[data-google-image-layout]'));
 
 		imgLoad.on('progress', function(instance, image) {
 		  image.img.setAttribute('data-width', image.img.offsetWidth);
@@ -162,7 +163,7 @@
 		  	after: function() {
 		  		setTimeout(function() {
 		  			gallery._handleResize();
-		  		}, 350);
+		  		}, 500);
 		  	}
 		  });
 		}, 25);
@@ -173,6 +174,9 @@
 	 */
 
 	Gallery.prototype.init = function() {
+
+		var controls = CreateControls.init();
+		this._element.appendChild(controls);
 
 		// Root element.
 		this._gallery = this._element;
@@ -191,6 +195,7 @@
 
 		// Container of controls.
 		this._controls = this._gallery.querySelector('.' + this._cssClasses.CONTROLS);
+		// this._controls = CreateControls.init();
 
 		// Close control button.
 		this._closeBtn = this._controls.querySelector('.' + this._cssClasses.CONTROLS_CLOSE);
@@ -440,9 +445,16 @@
 	};
 
 	Gallery.prototype._activateFullImg = function() {
+		this._thumb.classList.add('hide');
 		this._fullImg.classList.add('active');
 		this._fullImg.style[transformString] = 'translate3d(0,0,0)';
 		this._fullImgOpen = true;
+
+		this._fullImgs.forEach(function(img) {
+			if (!img.classList.contains('active')) {
+				img.classList.add('almost-active');
+			}
+		});
 	};
 
 
@@ -484,17 +496,20 @@
 			this._fullBox.classList.remove('active');
 			this._controls.classList.remove('active');
 			this._fullImg.style[transformString] = this._fullImgsTransforms[this._thumbIndex];
+			this._thumb.classList.remove('hide');
+
+			this._fullImgs.forEach(function(img) {
+				img.classList.remove('almost-active');
+			});
 
 			var fullImgTransEnd = function() {
 				this._fullImg.classList.remove('active');
 				this._fullImg.removeEventListener(transitionendString, fullImgTransEnd);
-				// this._thumbIndex = '';
+
 				this._fullImgOpen = false;
 			}.bind(this);
 
 			this._fullImg.addEventListener(transitionendString, fullImgTransEnd);
-
-
 			this._enableScroll();
 			
 		}.bind(this);
@@ -552,8 +567,6 @@
 
 		this._fullImg = this._newFullImg;
 		this._fullImg.classList.add('active');
-
-		
 	};
 
 	/**

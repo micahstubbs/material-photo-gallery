@@ -11,6 +11,7 @@
 				background: #fefefe;
 				color: white;
 				-webkit-font-smoothing: antialiased;
+				-moz-osx-font-smoothing: grayscale;
 			}
 
 			h2 {
@@ -28,49 +29,25 @@
 		<h2>Material Photo Gallery</h2>
 
 		<div class="m-p-g">
-			<!-- GALLERY THUMBNAILS -->
-			<div class="m-p-g__thumbs google-image-layout" data-google-image-layout data-max-height="350">
-					<img src="http://unsplash.it/600/400?image=210" data-full="http://unsplash.it/1200/800?image=210" class="m-p-g__thumbs-img" />
-					<img src="http://unsplash.it/640/450?image=204" data-full="http://unsplash.it/1280/900?image=204" class="m-p-g__thumbs-img" />
-					<img src="http://unsplash.it/550/420?image=422" data-full="http://unsplash.it/1100/840?image=422" class="m-p-g__thumbs-img" />
-					<img src="http://unsplash.it/650/450?image=493" data-full="http://unsplash.it/1300/900?image=493" class="m-p-g__thumbs-img" />
-					<img src="http://unsplash.it/600/350?image=723" data-full="http://unsplash.it/1200/700?image=723" class="m-p-g__thumbs-img" />
-					<img src="http://unsplash.it/560/500?image=525" data-full="http://unsplash.it/1120/1000?image=525" class="m-p-g__thumbs-img" />
-					<img src="http://unsplash.it/670/410?image=401" data-full="http://unsplash.it/1340/820?image=401" class="m-p-g__thumbs-img" />
-					<img src="http://unsplash.it/620/340?image=623" data-full="http://unsplash.it/1240/680?image=623" class="m-p-g__thumbs-img" />
-					<img src="http://unsplash.it/790/390?image=339" data-full="http://unsplash.it/1580/780?image=339" class="m-p-g__thumbs-img" />
+			<div class="m-p-g__thumbs" data-google-image-layout data-max-height="350">
+				<img src="http://unsplash.it/600/400?image=940" data-full="http://unsplash.it/1200/800?image=940" class="m-p-g__thumbs-img" />
+				<img src="http://unsplash.it/640/450?image=906" data-full="http://unsplash.it/1280/900?image=906" class="m-p-g__thumbs-img" />
+				<img src="http://unsplash.it/550/420?image=885" data-full="http://unsplash.it/1100/840?image=885" class="m-p-g__thumbs-img" />
+				<img src="http://unsplash.it/650/450?image=823" data-full="http://unsplash.it/1300/900?image=823" class="m-p-g__thumbs-img" />
+				<img src="http://unsplash.it/600/350?image=815" data-full="http://unsplash.it/1200/700?image=815" class="m-p-g__thumbs-img" />
+				<img src="http://unsplash.it/560/500?image=677" data-full="http://unsplash.it/1120/1000?image=677" class="m-p-g__thumbs-img" />
+				<img src="http://unsplash.it/670/410?image=401" data-full="http://unsplash.it/1340/820?image=401" class="m-p-g__thumbs-img" />
+				<img src="http://unsplash.it/620/340?image=623" data-full="http://unsplash.it/1240/680?image=623" class="m-p-g__thumbs-img" />
+				<img src="http://unsplash.it/790/390?image=339" data-full="http://unsplash.it/1580/780?image=339" class="m-p-g__thumbs-img" />
 			</div>
 
-			<div class="m-p-g__fullscreen">
-				<!-- FULL SIZE IMAGES GET APPENDED HERE -->
-			</div>
-
-			<!-- GALLERY CONTROLS -->
-			<div class="m-p-g__controls">
-				<button type="button" class="m-p-g__controls-close">
-					<span class="m-p-g__btn">
-						<svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>
-					</span>
-				</button>
-				<button type="button" class="m-p-g__controls-arrow m-p-g__controls-arrow--prev">
-					<span class="m-p-g__btn">
-						<svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-					</span>
-				</button>
-				<button type="button" class="m-p-g__controls-arrow m-p-g__controls-arrow--next">
-					<span class="m-p-g__btn">
-						<svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
-					</span>
-				</button>
-			</div>
+			<div class="m-p-g__fullscreen"></div>
 		</div>
 
 		<script src="./dist/js/material-photo-gallery.js"></script>
 		<script>
-			// Select gallery element.
 			var elem = document.querySelector('.m-p-g');
 
-			// Init gallery
 			document.addEventListener('DOMContentLoaded', function() {
 				var gallery = new MaterialPhotoGallery(elem);
 			});
