@@ -5,7 +5,7 @@ A vanilla javascript photo gallery plugin inspired by Google Photos.
 <a href="//ettrics.github.io/material-photo-gallery/">View demo</a>
 
 ## Install
-<!-- 
+
 #### NPM
 ```
 npm install material-photo-gallery --save-dev
@@ -14,10 +14,10 @@ npm install material-photo-gallery --save-dev
 #### Usage
 ```js
 var MaterialPhotoGallery = require('material-photo-gallery');
+
 var elem = document.querySelector('.m-p-g');
 var gallery = new MaterialPhotoGallery(elem);
-``` -->
-NPM install coming soon.
+```
 
 #### Include Script
 ``` html

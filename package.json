@@ -1,6 +1,6 @@
 {
   "name": "material-photo-gallery",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A photo gallery inspired by Google Photos.",
   "main": "./src/js/material-photo-gallery.js",
   "scripts": {
