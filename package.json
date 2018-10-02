@@ -5,7 +5,8 @@
   "main": "./src/js/material-photo-gallery.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "live-server"
+    "start": "live-server",
+    "copy": "cp -r dist/ /Users/m/workspace/photo-transition-experiments/lib/material-photo-gallery/"
   },
   "keywords": ["material", "google", "photo", "gallery", "javascript"],
   "license": "MIT",
