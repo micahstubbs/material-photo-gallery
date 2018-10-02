@@ -6,16 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [
-    "material",
-    "google",
-    "photo",
-    "gallery",
-    "javascript"
-  ],
+  "keywords": ["material", "google", "photo", "gallery", "javascript"],
   "author": "ettrics",
   "license": "MIT",
-  "dev-dependencies": {
+  "devDependencies": {
     "autoprefixer": "^5.2.0",
     "browserify": "^11.2.0",
     "gulp": "^3.8.11",
