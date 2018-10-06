@@ -6,15 +6,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "live-server",
-    "copy": "cp -r dist/ /Users/m/workspace/photo-transition-experiments/lib/material-photo-gallery/"
+    "copy": "cp -r dist/ /Users/m/workspace/photo-transition-experiments/lib/material-photo-gallery/",
+    "format": "prettier --config .prettierrc.json --write 'src/**/*.js'",
+    "format:check": "prettier --config config/.prettierrc.json --debug-check --list-different 'src/**/*.js'"
   },
-  "keywords": [
-    "material",
-    "google",
-    "photo",
-    "gallery",
-    "javascript"
-  ],
+  "keywords": ["material", "google", "photo", "gallery", "javascript"],
   "license": "MIT",
   "devDependencies": {
     "autoprefixer": "^5.2.0",
