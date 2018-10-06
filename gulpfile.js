@@ -10,7 +10,6 @@ var autoprefixer = require('autoprefixer')
 var browserify = require('browserify')
 var source = require('vinyl-source-stream')
 var buffer = require('vinyl-buffer')
-var jshint = require('gulp-jshint')
 
 var paths = {
   root: './',
@@ -30,9 +29,9 @@ var paths = {
   }
 }
 
-gulp.task('init', ['scss', 'browserify', 'lint'], function() {
+gulp.task('init', ['scss', 'browserify'], function() {
   gulp.watch(paths.src.scss, ['scss'])
-  gulp.watch(paths.src.js, ['lint', 'browserify'])
+  gulp.watch(paths.src.js, ['browserify'])
 })
 
 gulp.task('scss', function() {
@@ -57,13 +56,6 @@ gulp.task('browserify', function() {
     .pipe(uglify())
     .pipe(rename('material-photo-gallery.min.js'))
     .pipe(gulp.dest(paths.dist.js))
-})
-
-gulp.task('lint', function() {
-  return gulp
-    .src(paths.src.jsMain)
-    .pipe(jshint())
-    .pipe(jshint.reporter('jshint-stylish'))
 })
 
 // Handle errors and continue watching files

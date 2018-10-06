@@ -1,5 +1,89 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
+ * eventie v1.0.6
+ * event binding helper
+ *   eventie.bind( elem, 'click', myFn )
+ *   eventie.unbind( elem, 'click', myFn )
+ * MIT license
+ */
+
+/*jshint browser: true, undef: true, unused: true */
+/*global define: false, module: false */
+
+( function( window ) {
+
+'use strict';
+
+var docElem = document.documentElement;
+
+var bind = function() {};
+
+function getIEEvent( obj ) {
+  var event = window.event;
+  // add event.target
+  event.target = event.target || event.srcElement || obj;
+  return event;
+}
+
+if ( docElem.addEventListener ) {
+  bind = function( obj, type, fn ) {
+    obj.addEventListener( type, fn, false );
+  };
+} else if ( docElem.attachEvent ) {
+  bind = function( obj, type, fn ) {
+    obj[ type + fn ] = fn.handleEvent ?
+      function() {
+        var event = getIEEvent( obj );
+        fn.handleEvent.call( fn, event );
+      } :
+      function() {
+        var event = getIEEvent( obj );
+        fn.call( obj, event );
+      };
+    obj.attachEvent( "on" + type, obj[ type + fn ] );
+  };
+}
+
+var unbind = function() {};
+
+if ( docElem.removeEventListener ) {
+  unbind = function( obj, type, fn ) {
+    obj.removeEventListener( type, fn, false );
+  };
+} else if ( docElem.detachEvent ) {
+  unbind = function( obj, type, fn ) {
+    obj.detachEvent( "on" + type, obj[ type + fn ] );
+    try {
+      delete obj[ type + fn ];
+    } catch ( err ) {
+      // can't delete window object properties
+      obj[ type + fn ] = undefined;
+    }
+  };
+}
+
+var eventie = {
+  bind: bind,
+  unbind: unbind
+};
+
+// ----- module definition ----- //
+
+if ( typeof define === 'function' && define.amd ) {
+  // AMD
+  define( eventie );
+} else if ( typeof exports === 'object' ) {
+  // CommonJS
+  module.exports = eventie;
+} else {
+  // browser global
+  window.eventie = eventie;
+}
+
+})( window );
+
+},{}],2:[function(require,module,exports){
+/*!
  * imagesLoaded v3.2.0
  * JavaScript is all like "You images are done yet or what?"
  * MIT License
@@ -384,91 +468,7 @@ function makeArray( obj ) {
 
 });
 
-},{"eventie":2,"wolfy87-eventemitter":3}],2:[function(require,module,exports){
-/*!
- * eventie v1.0.6
- * event binding helper
- *   eventie.bind( elem, 'click', myFn )
- *   eventie.unbind( elem, 'click', myFn )
- * MIT license
- */
-
-/*jshint browser: true, undef: true, unused: true */
-/*global define: false, module: false */
-
-( function( window ) {
-
-'use strict';
-
-var docElem = document.documentElement;
-
-var bind = function() {};
-
-function getIEEvent( obj ) {
-  var event = window.event;
-  // add event.target
-  event.target = event.target || event.srcElement || obj;
-  return event;
-}
-
-if ( docElem.addEventListener ) {
-  bind = function( obj, type, fn ) {
-    obj.addEventListener( type, fn, false );
-  };
-} else if ( docElem.attachEvent ) {
-  bind = function( obj, type, fn ) {
-    obj[ type + fn ] = fn.handleEvent ?
-      function() {
-        var event = getIEEvent( obj );
-        fn.handleEvent.call( fn, event );
-      } :
-      function() {
-        var event = getIEEvent( obj );
-        fn.call( obj, event );
-      };
-    obj.attachEvent( "on" + type, obj[ type + fn ] );
-  };
-}
-
-var unbind = function() {};
-
-if ( docElem.removeEventListener ) {
-  unbind = function( obj, type, fn ) {
-    obj.removeEventListener( type, fn, false );
-  };
-} else if ( docElem.detachEvent ) {
-  unbind = function( obj, type, fn ) {
-    obj.detachEvent( "on" + type, obj[ type + fn ] );
-    try {
-      delete obj[ type + fn ];
-    } catch ( err ) {
-      // can't delete window object properties
-      obj[ type + fn ] = undefined;
-    }
-  };
-}
-
-var eventie = {
-  bind: bind,
-  unbind: unbind
-};
-
-// ----- module definition ----- //
-
-if ( typeof define === 'function' && define.amd ) {
-  // AMD
-  define( eventie );
-} else if ( typeof exports === 'object' ) {
-  // CommonJS
-  module.exports = eventie;
-} else {
-  // browser global
-  window.eventie = eventie;
-}
-
-})( window );
-
-},{}],3:[function(require,module,exports){
+},{"eventie":1,"wolfy87-eventemitter":3}],3:[function(require,module,exports){
 /*!
  * EventEmitter v4.2.11 - git.io/ee
  * Unlicense - http://unlicense.org/
@@ -945,81 +945,89 @@ if ( typeof define === 'function' && define.amd ) {
 }.call(this));
 
 },{}],4:[function(require,module,exports){
-(function(root, factory) {
-	if (typeof exports === 'object') {
-		module.exports = factory();
-	} else {
-		root.CreateControls = factory();
-	}
+;(function(root, factory) {
+  if (typeof exports === 'object') {
+    module.exports = factory()
+  } else {
+    root.CreateControls = factory()
+  }
 })(this, function() {
+  'use strict'
 
-	'use strict';
+  var CreateControls = {}
 
-	var CreateControls = {};
+  var _cssClasses = {
+    CONTROLS: 'm-p-g__controls',
+    CONTROLS_CLOSE: 'm-p-g__controls-close',
+    CONTROLS_ARROW: 'm-p-g__controls-arrow',
+    CONTROLS_NEXT: 'm-p-g__controls-arrow--next',
+    CONTROLS_PREV: 'm-p-g__controls-arrow--prev',
+    CONTROLS_BTN: 'm-p-g__btn'
+  }
 
-	var _cssClasses = {
-		CONTROLS: 'm-p-g__controls',
-		CONTROLS_CLOSE: 'm-p-g__controls-close',
-		CONTROLS_ARROW: 'm-p-g__controls-arrow',
-		CONTROLS_NEXT: 'm-p-g__controls-arrow--next',
-		CONTROLS_PREV: 'm-p-g__controls-arrow--prev',
-		CONTROLS_BTN: 'm-p-g__btn'
-	};
+  var controlsCloseSvg =
+    '<svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'
 
-	var controlsCloseSvg = '<svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>';
+  var controlsPrevSvg =
+    '<svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>'
 
-	var controlsPrevSvg = '<svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>';
+  var controlsNextSvg =
+    '<svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>'
 
-	var controlsNextSvg = '<svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>';
+  function _createEl(el, className, attr) {
+    var element = document.createElement(el)
+    if (className && typeof className === 'object') {
+      className.forEach(function(c) {
+        element.classList.add(c)
+      })
+    } else {
+      element.classList.add(className)
+    }
+    return element
+  }
 
-	function _createEl(el, className, attr) {
-		var element = document.createElement(el);
-		if (className && typeof className === 'object') {
-			className.forEach(function(c) {
-				element.classList.add(c);
-			});
-		} else {
-			element.classList.add(className);
-		}
-		return element;
-	}
+  function init() {
+    var controls = _createEl('div', _cssClasses.CONTROLS)
+    var close = _createEl('button', _cssClasses.CONTROLS_CLOSE)
+    var next = _createEl('button', [
+      _cssClasses.CONTROLS_ARROW,
+      _cssClasses.CONTROLS_NEXT
+    ])
+    var prev = _createEl('button', [
+      _cssClasses.CONTROLS_ARROW,
+      _cssClasses.CONTROLS_PREV
+    ])
 
-	function init() {
-		var controls = _createEl('div', _cssClasses.CONTROLS);
-		var close = _createEl('button', _cssClasses.CONTROLS_CLOSE);
-		var next = _createEl('button', [_cssClasses.CONTROLS_ARROW, _cssClasses.CONTROLS_NEXT]);
-		var prev = _createEl('button', [_cssClasses.CONTROLS_ARROW, _cssClasses.CONTROLS_PREV]);
+    var childrenControls = [close, next, prev]
 
-		var childrenControls = [close, next, prev];
+    for (var i = 0; i < childrenControls.length; i++) {
+      controls.appendChild(childrenControls[i])
+    }
 
-		for (var i = 0; i < childrenControls.length; i++) {
-			controls.appendChild(childrenControls[i]);
-		}
+    var closeBtn = _createEl('span', _cssClasses.CONTROLS_BTN)
+    var nextBtn = _createEl('span', _cssClasses.CONTROLS_BTN)
+    var prevBtn = _createEl('span', _cssClasses.CONTROLS_BTN)
 
-		var closeBtn = _createEl('span', _cssClasses.CONTROLS_BTN);
-		var nextBtn = _createEl('span', _cssClasses.CONTROLS_BTN);
-		var prevBtn = _createEl('span', _cssClasses.CONTROLS_BTN);
+    closeBtn.innerHTML = controlsCloseSvg
+    nextBtn.innerHTML = controlsNextSvg
+    prevBtn.innerHTML = controlsPrevSvg
 
-		closeBtn.innerHTML = controlsCloseSvg;
-		nextBtn.innerHTML = controlsNextSvg;
-		prevBtn.innerHTML = controlsPrevSvg;
+    close.appendChild(closeBtn)
+    next.appendChild(nextBtn)
+    prev.appendChild(prevBtn)
 
-		close.appendChild(closeBtn);
-		next.appendChild(nextBtn);
-		prev.appendChild(prevBtn);
+    return controls
+  }
 
-		return controls;
-	}
+  CreateControls.init = init
 
-	CreateControls.init = init;
+  return CreateControls
+})
 
-	return CreateControls;
-
-});
 },{}],5:[function(require,module,exports){
 // Expose MaterialPhotoGallery to Global Scope
-var MaterialPhotoGallery = require('./material-photo-gallery');
-window.MaterialPhotoGallery = MaterialPhotoGallery;
+var MaterialPhotoGallery = require('./material-photo-gallery')
+window.MaterialPhotoGallery = MaterialPhotoGallery
 
 },{"./material-photo-gallery":6}],6:[function(require,module,exports){
 /**
@@ -1032,601 +1040,623 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
  *
  */
 
-(function(root, factory) {
-	if (typeof define === 'function' && define.amd) {
-		define(factory);
-	} else if (typeof exports === 'object') {
-		module.exports = factory(
-			require('imagesLoaded'),
-			require('./vendor/google-image-layout'),
-			require('./create-controls')
-		);
-	} else {
-		root.Gallery = factory(
-			window.imagesLoaded,
-			window.GoogleImageLayout
-		);
-	}
+;(function(root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    define(factory)
+  } else if (typeof exports === 'object') {
+    module.exports = factory(
+      require('imagesLoaded'),
+      require('./vendor/google-image-layout'),
+      require('./create-controls')
+    )
+  } else {
+    root.Gallery = factory(window.imagesLoaded, window.GoogleImageLayout)
+  }
 })(this, function(imagesLoaded, GoogleImageLayout, CreateControls) {
+  'use strict'
 
-	'use strict';
+  /**
+   * Class constructor for Gallery component.
+   *
+   * @constructor
+   * @param {HTMLElement} element - The gallery element.
+   */
 
-	/**
-	 * Class constructor for Gallery component.
-	 *
-	 * @constructor
-	 * @param {HTMLElement} element - The gallery element.
-	 */
+  var Gallery = function(element) {
+    this._element = element
+    this._layout()
+  }
 
-	var Gallery = function(element) {
-		this._element = element;
-		this._layout();
-	};
+  /**
+   * Detect CSS transform support
+   */
 
-	/**
-	 * Detect CSS transform support
-	 */
+  var transform = false,
+    transformString = 'transform',
+    domPrefixes = 'Webkit Moz ms'.split(' '),
+    pfx = '',
+    elem = document.createElement('div')
 
-	var transform = false,
-	    transformString = 'transform',
-	    domPrefixes = 'Webkit Moz ms'.split(' '),
-	    pfx = '',
-	    elem = document.createElement('div');
+  if (elem.style.transform !== undefined) {
+    transform = true
+  }
 
-	if (elem.style.transform !== undefined) { transform = true; }
+  if (transform === false) {
+    for (var i = 0; i < domPrefixes.length; i++) {
+      if (elem.style[domPrefixes[i] + 'Transform'] !== undefined) {
+        pfx = domPrefixes[i]
+        transformString = pfx + 'Transform'
+        transform = true
+        break
+      }
+    }
+  }
 
-	if (transform === false) {
-	  for (var i = 0; i < domPrefixes.length; i++) {
-	    if (elem.style[domPrefixes[i] + 'Transform'] !== undefined) {
-	      pfx = domPrefixes[i];
-	      transformString = pfx + 'Transform';
-	      transform = true;
-	      break;
-	    }
-	  }
-	}
+  /**
+   * Detect transitionend event support
+   */
 
-	/**
-	 * Detect transitionend event support
-	 */
+  var transitions = {
+      transition: 'transitionend',
+      WebkitTransition: 'webkitTransitionEnd',
+      MozTransition: 'transitionend',
+      OTransition: 'otransitionend'
+    },
+    transitionendString,
+    elem = document.createElement('div')
 
-	var transitions = {
-	    'transition': 'transitionend',
-	    'WebkitTransition': 'webkitTransitionEnd',
-	    'MozTransition': 'transitionend',
-	    'OTransition': 'otransitionend'
-	  },
-	  transitionendString,
-	  elem = document.createElement('div');
-	 
   for (var t in transitions) {
     if (typeof elem.style[t] !== 'undefined') {
-      transitionendString = transitions[t];
-      break;
+      transitionendString = transitions[t]
+      break
     }
   }
 
   function debounce(func, wait, immediate) {
-  	var timeout;
-  	return function() {
-  		var context = this, args = arguments;
-  		var later = function() {
-  			timeout = null;
-  			if (!immediate) func.apply(context, args);
-  		};
-  		var callNow = immediate && !timeout;
-  		clearTimeout(timeout);
-  		timeout = setTimeout(later, wait);
-  		if (callNow) func.apply(context, args);
-  	};
+    var timeout
+    return function() {
+      var context = this,
+        args = arguments
+      var later = function() {
+        timeout = null
+        if (!immediate) func.apply(context, args)
+      }
+      var callNow = immediate && !timeout
+      clearTimeout(timeout)
+      timeout = setTimeout(later, wait)
+      if (callNow) func.apply(context, args)
+    }
   }
 
-	/**
-	 * Css class names stored as strings.
-	 *
-	 * @private
-	 */
-
-	Gallery.prototype._cssClasses = {
-		GALLERY: 'm-p-g',
-		THUMBS_BOX: 'm-p-g__thumbs',
-		THUMB_IMG: 'm-p-g__thumbs-img',
-		FULL_BOX: 'm-p-g__fullscreen',
-		FULL_IMG: 'm-p-g__fullscreen-img',
-		CONTROLS: 'm-p-g__controls',
-		CONTROLS_CLOSE: 'm-p-g__controls-close',
-		CONTROLS_NEXT: 'm-p-g__controls-arrow--next',
-		CONTROLS_PREV: 'm-p-g__controls-arrow--prev'
-	};
-
-	/**
-	 * Init the Google Image Layout.
-	 */
-
-	Gallery.prototype._layout = function() {
-		var gallery = this;
-		var imgLoad = imagesLoaded(document.querySelector('div[data-google-image-layout]'));
-
-		imgLoad.on('progress', function(instance, image) {
-		  image.img.setAttribute('data-width', image.img.offsetWidth);
-		  image.img.setAttribute('data-height', image.img.offsetHeight);
-		});
-
-		imgLoad.on('done', function(instance) {
-		  var g = new GoogleImageLayout().init({
-		  	after: function() {
-		  		gallery.init();
-		  	}
-		  });
-		});
-
-		imgLoad.on('fail', function(instance) {
-			var galleryEl = gallery._element;
-			var alertBox = document.createElement('div');
-			alertBox.className = 'm-p-g__alertBox';
-			var alertBoxTitle = document.createElement('h2');
-			alertBoxTitle.innerHTML = 'Error';
-			var alertBoxMessage = document.createElement('p');
-			alertBox.appendChild(alertBoxTitle);
-			alertBox.appendChild(alertBoxMessage);
-			galleryEl.appendChild(alertBox);
-
-			var brokenImages = [];
-			instance.images.forEach(function(image) {
-				if (!image.isLoaded) {
-					brokenImages.push(image.img.currentSrc);
-				}
-			});
-
-			alertBoxMessage.innerHTML = 'Failed to load:' + ' ' + brokenImages;
-			
-		});
-
-		window.onresize = debounce(function() {
-		  var g = new GoogleImageLayout().init({
-		  	after: function() {
-		  		setTimeout(function() {
-		  			gallery._handleResize();
-		  		}, 500);
-		  	}
-		  });
-		}, 25);
-	};
-
-	/**
-	 * Init the Gallery component.
-	 */
-
-	Gallery.prototype.init = function() {
-
-		var controls = CreateControls.init();
-		this._element.appendChild(controls);
-
-		// Root element.
-		this._gallery = this._element;
-
-		// Container element for thumbnails.
-		this._thumbsBox = this._gallery.querySelector('.' + this._cssClasses.THUMBS_BOX);
-
-		// Nodelist of thumbnails.
-		this._thumbsNodeList = this._thumbsBox.querySelectorAll('.' + this._cssClasses.THUMB_IMG);
-
-		// Array of thumbnails.
-		this._thumbs = Array.prototype.slice.call(this._thumbsNodeList);
-
-		// Container of full size images.
-		this._fullBox = this._gallery.querySelector('.' + this._cssClasses.FULL_BOX);
-
-		// Container of controls.
-		this._controls = this._gallery.querySelector('.' + this._cssClasses.CONTROLS);
-		// this._controls = CreateControls.init();
-
-		// Close control button.
-		this._closeBtn = this._controls.querySelector('.' + this._cssClasses.CONTROLS_CLOSE);
-
-		// Prev control button.
-		this._prevBtn = this._controls.querySelector('.' + this._cssClasses.CONTROLS_PREV);
-
-		// Next control button.
-		this._nextBtn = this._controls.querySelector('.' + this._cssClasses.CONTROLS_NEXT);
-
-		// Is true when the full size images have been loaded.
-		this._fullImgsLoaded = false;
-
-		// Is true when a full size image is being viewed.
-		this._fullImgOpen = false;
-
-		// Bind events to elements.
-		this._bindEvents.call(this);
-
-		// Load full size images.
-		this._loadFullImgs.call(this);
-	};
-
-	/**
-	 * Add event listeners to elements.
-	 *
-	 * @private
-	 */
-
-	Gallery.prototype._bindEvents = function() {
-
-		for (var i = 0, ii = this._thumbs.length; i < ii; i++) {
-
-			// Add click event to each thumbnail.
-			this._thumbs[i].addEventListener('click', this._handleThumbClick.bind(this));
-
-			// Add hover event to each thumbnail.
-			this._thumbs[i].addEventListener('mouseover', this._handleThumbHover.bind(this));
-		}
-
-		// Add click event to close button.
-		this._closeBtn.addEventListener('click', this._handleClose.bind(this));
-
-		// Add click event to next button.
-		this._nextBtn.addEventListener('click', this._handleNext.bind(this));
-
-		// Add click event to prev button.
-		this._prevBtn.addEventListener('click', this._handlePrev.bind(this));
-
-		window.addEventListener('scroll', this._handleScroll.bind(this));
-	};
-
-	Gallery.prototype._handleScroll = debounce(function() {
-		this._resetFullImg.call(this);	
-	}, 25);
-
-	Gallery.prototype._handleResize = function() {
-		this._resetFullImg.call(this);
-	};
-
-	/**
-	 * Load the full size images from the 'data-full' attribute.
-	 *
-	 * @private
-	 */
-
-	Gallery.prototype._loadFullImgs = function() {
-
-		var src, img;
-
-		for (var i = 0, ii = this._thumbs.length; i < ii; i++) {
-
-			// Source of full size image.
-			src = this._thumbs[i].getAttribute('data-full');
-
-			// Create empty Image object.
-			img = new Image();
-
-			// Give new Image full size image src value.
-			img.src = src;
-
-			// Give new Image appropriate class name.
-			img.classList.add(this._cssClasses.FULL_IMG);
-
-			// Append full size image to full size image container.
-			this._fullBox.appendChild(img);
-
-		}
-
-		this._loadFullImgsDone.call(this);		
-	};
-
-	Gallery.prototype._loadFullImgsDone = function() {
-
-		var imgLoad = imagesLoaded(this._fullBox);
-		imgLoad.on('done', function(instance) {
-			var imgArr = instance.images;
-			
-			this._fullImgs = [];
-			this._fullImgDimensions = [];
-			this._fullImgsTransforms = [];
-
-			for (var i = 0, ii = imgArr.length; i < ii; i++) {
-				var rect = imgArr[i].img.getBoundingClientRect();
-				this._fullImgs.push(imgArr[i].img);
-				this._positionFullImgs.call(this, imgArr[i].img, i);
-				this._fullImgDimensions.push(rect);
-			}
-			
-			this._fullImgsLoaded = true;
-		}.bind(this));
-	};
-
-	Gallery.prototype._positionFullImgs = function(img, i, applyTransform) {
-		var transform = this._transformFullImg(img, this._thumbs[i]);
-		this._fullImgsTransforms.push(transform);
-		
-		img.style.marginTop = -img.height / 2 + 'px';
-		img.style.marginLeft = -img.width / 2 + 'px';
-		if (applyTransform !== false) {
-			img.style[transformString] = transform;
-		}
-	};
-
-	/**
-	 * Makes the thumbnail transform to the same size and position as the full
-	 * size image.
-	 *
-	 * @private
-	 */
-
-	Gallery.prototype._transformFullImg = function(fullImg, thumb, fullImgSize) {
-
-		var scaleX, scaleY, transX, transY;
-
-		fullImg = fullImg.getBoundingClientRect();
-		thumb = thumb.getBoundingClientRect();
-
-		if (fullImgSize) {
-			scaleX = (thumb.width / fullImgSize.width).toFixed(3);
-			scaleY = (thumb.height / fullImgSize.height).toFixed(3);
-			transX = thumb.left - fullImgSize.left + (fullImgSize.width / 2);
-			transY = thumb.top - fullImgSize.top + (fullImgSize.height / 2);
-
-		} else {
-			scaleX = (thumb.width / fullImg.width).toFixed(3);
-			scaleY = (thumb.height / fullImg.height).toFixed(3);
-			transX = thumb.left - fullImg.left + (fullImg.width / 2);
-			transY = thumb.top - fullImg.top + (fullImg.height / 2);
-		}
-
-		var transform = 'translate(' + transX + 'px,' + transY + 'px) scale(' + scaleX + ',' + scaleY + ')';
-
-		return transform;
-	};
-
-	Gallery.prototype._resetFullImg = function() {
-
-		this._fullImgsTransforms = [];
-
-		for (var i = 0, ii = this._fullImgs.length; i < ii; i++) {
-			
-			var size = {
-				width: this._fullImgDimensions[i].width,
-				height: this._fullImgDimensions[i].height,
-				left: this._fullImgDimensions[i].left,
-				top: this._fullImgDimensions[i].top
-			};
-
-			if (i === this._thumbIndex && this._fullImgOpen) {
-				this._fullImgs[i].removeAttribute('style');
-				this._positionFullImgs.call(this, this._fullImgs[i], i, false);
-			} else {
-				this._fullImgs[i].removeAttribute('style');
-				this._positionFullImgs.call(this, this._fullImgs[i], i);
-			}
-		}
-	};
-
-	/**
-	 * Thumbnail hover event.
-	 *
-	 * @param {Event} event - The event.
-	 * @private
-	 */
-
-	Gallery.prototype._handleThumbHover = function(event) {
-		if (this._fullImgsLoaded && !this._fullImgOpen) {
-			this._transformThumbSetup.call(this, event);
-		}
-	};
-
-	/**
-	 * Thumbnail click event.
-	 *
-	 * @param {Event} event - The event.
-	 * @private
-	 */
-
-	Gallery.prototype._handleThumbClick = function(event) {
-
-		if (this._thumb != event.target) {
-			// Cache the thumb being hovered over.
-			this._thumb = event.target;
-
-			// Index of thumb.
-			this._thumbIndex = this._thumbs.indexOf(this._thumb);
-
-			// The full size image of that thumbnail.
-			this._fullImg = this._fullImgs[this._thumbIndex];
-		}
-
-		if (this._setupComplete && this._fullImgsLoaded && !this._fullImgOpen) {
-			this._activateFullImg.call(this);
-			this._activateControls.call(this);
-			this._activateFullBox.call(this);
-			this._disableScroll();
-		}
-	};
-
-	/**
-	 * Caches the thumbnail and full size image that was just hovered over.
-	 * Stores the css transform value so we can use it later.
-	 *
-	 * @param {Event} event - The event.
-	 * @param {Function} fn - An optional callback function.
-	 * @private
-	 */
-
-	Gallery.prototype._transformThumbSetup = function(event, fn) {
-
-		this._setupComplete = false;
-
-		// Cache the thumb being hovered over.
-		this._thumb = event.target;
-
-		// Index of thumb.
-		this._thumbIndex = this._thumbs.indexOf(this._thumb);
-
-		// The full size image of that thumbnail.
-		this._fullImg = this._fullImgs[this._thumbIndex];
-
-		this._setupComplete = true;
-
-		if (fn) fn();	
-
-	};
-
-	Gallery.prototype._activateFullImg = function() {
-		this._thumb.classList.add('hide');
-		this._fullImg.classList.add('active');
-		this._fullImg.style[transformString] = 'translate3d(0,0,0)';
-		this._fullImgOpen = true;
-
-		this._fullImgs.forEach(function(img) {
-			if (!img.classList.contains('active')) {
-				img.classList.add('almost-active');
-			}
-		});
-	};
-
-
-	/**
-	 * Show the fullBox.
-	 *
-	 * @private
-	 */
-
-	Gallery.prototype._activateFullBox = function() {
-		this._fullBox.classList.add('active');
-	};
-
-	/**
-	 * Show the controls.
-	 *
-	 * @private
-	 */
-
-	Gallery.prototype._activateControls = function() {
-		this._controls.classList.add('active');
-	};
-
-	/**
-	 * CloseBtn click event.
-	 *
-	 * @private
-	 */
-
-	Gallery.prototype._handleClose = function() {
-		if (this._fullImgOpen) {
-			this._closeFullImg.call(this);
-		}
-	};
-
-	Gallery.prototype._closeFullImg = function() {
-
-		var animation = function() {
-			this._fullBox.classList.remove('active');
-			this._controls.classList.remove('active');
-			this._fullImg.style[transformString] = this._fullImgsTransforms[this._thumbIndex];
-			this._thumb.classList.remove('hide');
-
-			this._fullImgs.forEach(function(img) {
-				img.classList.remove('almost-active');
-			});
-
-			var fullImgTransEnd = function() {
-				this._fullImg.classList.remove('active');
-				this._fullImg.removeEventListener(transitionendString, fullImgTransEnd);
-
-				this._fullImgOpen = false;
-			}.bind(this);
-
-			this._fullImg.addEventListener(transitionendString, fullImgTransEnd);
-			this._enableScroll();
-			
-		}.bind(this);
-
-		window.requestAnimationFrame(animation);
-	};
-
-	/**
-	 * NextBtn click event.
-	 *
-	 * @private
-	 */
-
-	Gallery.prototype._handleNext = function() {
-		if (this._fullImgOpen) {
-			this._changeImg.call(this, 'next');
-		}
-	};
-
-	/**
-	 * PrevBtn click event.
-	 *
-	 * @private
-	 */
-
-	Gallery.prototype._handlePrev = function() {
-		if (this._fullImgOpen) {
-			this._changeImg.call(this, 'prev');
-		}
-	};
-
-	/**
-	 * Changes the active full size image and active thumbnail based on which
-	 * arrow was click (prev || next).
-	 *
-	 * @param {String} dir - A string to determine if we're going Prev or Next.
-	 * @private
-	 */
-
-	Gallery.prototype._changeImg = function(dir) {
-
-		this._thumbIndex = this._fullImgs.indexOf(this._fullImg);
-		dir === 'next' ? this._thumbIndex += 1 : this._thumbIndex -= 1;
-
-		this._newFullImg = dir === 'next' ? this._fullImg.nextElementSibling : this._fullImg.previousElementSibling;
-
-		if (!this._newFullImg || this._newFullImg.nodeName !== 'IMG') {
-			this._newFullImg = dir === 'next' ? this._newFullImg = this._fullImgs[0] : this._newFullImg = this._fullImgs[this._fullImgs.length - 1];
-			dir === 'next' ? this._thumbIndex = 0 : this._thumbIndex = this._fullImgs.length - 1;
-		}
-
-		this._newFullImg.style[transformString] = 'translate3d(0,0,0)';
-		this._fullImg.classList.remove('active');
-		this._fullImg.style[transformString] = this._fullImgsTransforms[this._thumbIndex-1];
-
-		this._fullImg = this._newFullImg;
-		this._fullImg.classList.add('active');
-	};
-
-	/**
-	 * Disables scrolling. Activated when a full size image is open.
-	 *
-	 * @private
-	 */
-
-	Gallery.prototype._disableScroll = function() {
-
-		function preventDefault(e) {
-			e = e || window.event;
-			if (e.preventDefault) e.preventDefault();
-			e.returnValue = false;  
-		}
-
-		window.onwheel = preventDefault;
-		window.ontouchmove  = preventDefault;
-	};
-
-	/**
-	 * Enables scrolling. Activated when a full size image is closed.
-	 *
-	 * @private
-	 */
-
-	Gallery.prototype._enableScroll = function() {
-		window.onwheel = null; 
-		window.ontouchmove = null;
-	};
-
-	return Gallery;
-});
-
-
-},{"./create-controls":4,"./vendor/google-image-layout":7,"imagesLoaded":1}],7:[function(require,module,exports){
+  /**
+   * Css class names stored as strings.
+   *
+   * @private
+   */
+
+  Gallery.prototype._cssClasses = {
+    GALLERY: 'm-p-g',
+    THUMBS_BOX: 'm-p-g__thumbs',
+    THUMB_IMG: 'm-p-g__thumbs-img',
+    FULL_BOX: 'm-p-g__fullscreen',
+    FULL_IMG: 'm-p-g__fullscreen-img',
+    CONTROLS: 'm-p-g__controls',
+    CONTROLS_CLOSE: 'm-p-g__controls-close',
+    CONTROLS_NEXT: 'm-p-g__controls-arrow--next',
+    CONTROLS_PREV: 'm-p-g__controls-arrow--prev'
+  }
+
+  /**
+   * Init the Google Image Layout.
+   */
+
+  Gallery.prototype._layout = function() {
+    var gallery = this
+    var imgLoad = imagesLoaded(
+      document.querySelector('div[data-google-image-layout]')
+    )
+
+    imgLoad.on('progress', function(instance, image) {
+      image.img.setAttribute('data-width', image.img.offsetWidth)
+      image.img.setAttribute('data-height', image.img.offsetHeight)
+    })
+
+    imgLoad.on('done', function(instance) {
+      var g = new GoogleImageLayout().init({
+        after: function() {
+          gallery.init()
+        }
+      })
+    })
+
+    imgLoad.on('fail', function(instance) {
+      var galleryEl = gallery._element
+      var alertBox = document.createElement('div')
+      alertBox.className = 'm-p-g__alertBox'
+      var alertBoxTitle = document.createElement('h2')
+      alertBoxTitle.innerHTML = 'Error'
+      var alertBoxMessage = document.createElement('p')
+      alertBox.appendChild(alertBoxTitle)
+      alertBox.appendChild(alertBoxMessage)
+      galleryEl.appendChild(alertBox)
+
+      var brokenImages = []
+      instance.images.forEach(function(image) {
+        if (!image.isLoaded) {
+          brokenImages.push(image.img.currentSrc)
+        }
+      })
+
+      alertBoxMessage.innerHTML = 'Failed to load:' + ' ' + brokenImages
+    })
+
+    window.onresize = debounce(function() {
+      var g = new GoogleImageLayout().init({
+        after: function() {
+          setTimeout(function() {
+            gallery._handleResize()
+          }, 500)
+        }
+      })
+    }, 25)
+  }
+
+  /**
+   * Init the Gallery component.
+   */
+
+  Gallery.prototype.init = function() {
+    var controls = CreateControls.init()
+    this._element.appendChild(controls)
+
+    // Root element.
+    this._gallery = this._element
+
+    // Container element for thumbnails.
+    this._thumbsBox = this._gallery.querySelector(
+      '.' + this._cssClasses.THUMBS_BOX
+    )
+
+    // Nodelist of thumbnails.
+    this._thumbsNodeList = this._thumbsBox.querySelectorAll(
+      '.' + this._cssClasses.THUMB_IMG
+    )
+
+    // Array of thumbnails.
+    this._thumbs = Array.prototype.slice.call(this._thumbsNodeList)
+
+    // Container of full size images.
+    this._fullBox = this._gallery.querySelector('.' + this._cssClasses.FULL_BOX)
+
+    // Container of controls.
+    this._controls = this._gallery.querySelector(
+      '.' + this._cssClasses.CONTROLS
+    )
+    // this._controls = CreateControls.init();
+
+    // Close control button.
+    this._closeBtn = this._controls.querySelector(
+      '.' + this._cssClasses.CONTROLS_CLOSE
+    )
+
+    // Prev control button.
+    this._prevBtn = this._controls.querySelector(
+      '.' + this._cssClasses.CONTROLS_PREV
+    )
+
+    // Next control button.
+    this._nextBtn = this._controls.querySelector(
+      '.' + this._cssClasses.CONTROLS_NEXT
+    )
+
+    // Is true when the full size images have been loaded.
+    this._fullImgsLoaded = false
+
+    // Is true when a full size image is being viewed.
+    this._fullImgOpen = false
+
+    // Bind events to elements.
+    this._bindEvents.call(this)
+
+    // Load full size images.
+    this._loadFullImgs.call(this)
+  }
+
+  /**
+   * Add event listeners to elements.
+   *
+   * @private
+   */
+
+  Gallery.prototype._bindEvents = function() {
+    for (var i = 0, ii = this._thumbs.length; i < ii; i++) {
+      // Add click event to each thumbnail.
+      this._thumbs[i].addEventListener(
+        'click',
+        this._handleThumbClick.bind(this)
+      )
+
+      // Add hover event to each thumbnail.
+      this._thumbs[i].addEventListener(
+        'mouseover',
+        this._handleThumbHover.bind(this)
+      )
+    }
+
+    // Add click event to close button.
+    this._closeBtn.addEventListener('click', this._handleClose.bind(this))
+
+    // Add click event to next button.
+    this._nextBtn.addEventListener('click', this._handleNext.bind(this))
+
+    // Add click event to prev button.
+    this._prevBtn.addEventListener('click', this._handlePrev.bind(this))
+
+    window.addEventListener('scroll', this._handleScroll.bind(this))
+  }
+
+  Gallery.prototype._handleScroll = debounce(function() {
+    this._resetFullImg.call(this)
+  }, 25)
+
+  Gallery.prototype._handleResize = function() {
+    this._resetFullImg.call(this)
+  }
+
+  /**
+   * Load the full size images from the 'data-full' attribute.
+   *
+   * @private
+   */
+
+  Gallery.prototype._loadFullImgs = function() {
+    var src, img
+
+    for (var i = 0, ii = this._thumbs.length; i < ii; i++) {
+      // Source of full size image.
+      src = this._thumbs[i].getAttribute('data-full')
+
+      // Create empty Image object.
+      img = new Image()
+
+      // Give new Image full size image src value.
+      img.src = src
+
+      // Give new Image appropriate class name.
+      img.classList.add(this._cssClasses.FULL_IMG)
+
+      // Append full size image to full size image container.
+      this._fullBox.appendChild(img)
+    }
+
+    this._loadFullImgsDone.call(this)
+  }
+
+  Gallery.prototype._loadFullImgsDone = function() {
+    var imgLoad = imagesLoaded(this._fullBox)
+    imgLoad.on(
+      'done',
+      function(instance) {
+        var imgArr = instance.images
+
+        this._fullImgs = []
+        this._fullImgDimensions = []
+        this._fullImgsTransforms = []
+
+        for (var i = 0, ii = imgArr.length; i < ii; i++) {
+          var rect = imgArr[i].img.getBoundingClientRect()
+          this._fullImgs.push(imgArr[i].img)
+          this._positionFullImgs.call(this, imgArr[i].img, i)
+          this._fullImgDimensions.push(rect)
+        }
+
+        this._fullImgsLoaded = true
+      }.bind(this)
+    )
+  }
+
+  Gallery.prototype._positionFullImgs = function(img, i, applyTransform) {
+    var transform = this._transformFullImg(img, this._thumbs[i])
+    this._fullImgsTransforms.push(transform)
+
+    img.style.marginTop = -img.height / 2 + 'px'
+    img.style.marginLeft = -img.width / 2 + 'px'
+    if (applyTransform !== false) {
+      img.style[transformString] = transform
+    }
+  }
+
+  /**
+   * Makes the thumbnail transform to the same size and position as the full
+   * size image.
+   *
+   * @private
+   */
+
+  Gallery.prototype._transformFullImg = function(fullImg, thumb, fullImgSize) {
+    var scaleX, scaleY, transX, transY
+
+    fullImg = fullImg.getBoundingClientRect()
+    thumb = thumb.getBoundingClientRect()
+
+    if (fullImgSize) {
+      scaleX = (thumb.width / fullImgSize.width).toFixed(3)
+      scaleY = (thumb.height / fullImgSize.height).toFixed(3)
+      transX = thumb.left - fullImgSize.left + fullImgSize.width / 2
+      transY = thumb.top - fullImgSize.top + fullImgSize.height / 2
+    } else {
+      scaleX = (thumb.width / fullImg.width).toFixed(3)
+      scaleY = (thumb.height / fullImg.height).toFixed(3)
+      transX = thumb.left - fullImg.left + fullImg.width / 2
+      transY = thumb.top - fullImg.top + fullImg.height / 2
+    }
+
+    var transform =
+      'translate(' +
+      transX +
+      'px,' +
+      transY +
+      'px) scale(' +
+      scaleX +
+      ',' +
+      scaleY +
+      ')'
+
+    return transform
+  }
+
+  Gallery.prototype._resetFullImg = function() {
+    this._fullImgsTransforms = []
+
+    for (var i = 0, ii = this._fullImgs.length; i < ii; i++) {
+      var size = {
+        width: this._fullImgDimensions[i].width,
+        height: this._fullImgDimensions[i].height,
+        left: this._fullImgDimensions[i].left,
+        top: this._fullImgDimensions[i].top
+      }
+
+      if (i === this._thumbIndex && this._fullImgOpen) {
+        this._fullImgs[i].removeAttribute('style')
+        this._positionFullImgs.call(this, this._fullImgs[i], i, false)
+      } else {
+        this._fullImgs[i].removeAttribute('style')
+        this._positionFullImgs.call(this, this._fullImgs[i], i)
+      }
+    }
+  }
+
+  /**
+   * Thumbnail hover event.
+   *
+   * @param {Event} event - The event.
+   * @private
+   */
+
+  Gallery.prototype._handleThumbHover = function(event) {
+    if (this._fullImgsLoaded && !this._fullImgOpen) {
+      this._transformThumbSetup.call(this, event)
+    }
+  }
+
+  /**
+   * Thumbnail click event.
+   *
+   * @param {Event} event - The event.
+   * @private
+   */
+
+  Gallery.prototype._handleThumbClick = function(event) {
+    if (this._thumb != event.target) {
+      // Cache the thumb being hovered over.
+      this._thumb = event.target
+
+      // Index of thumb.
+      this._thumbIndex = this._thumbs.indexOf(this._thumb)
+
+      // The full size image of that thumbnail.
+      this._fullImg = this._fullImgs[this._thumbIndex]
+    }
+
+    if (this._setupComplete && this._fullImgsLoaded && !this._fullImgOpen) {
+      this._activateFullImg.call(this)
+      this._activateControls.call(this)
+      this._activateFullBox.call(this)
+      this._disableScroll()
+    }
+  }
+
+  /**
+   * Caches the thumbnail and full size image that was just hovered over.
+   * Stores the css transform value so we can use it later.
+   *
+   * @param {Event} event - The event.
+   * @param {Function} fn - An optional callback function.
+   * @private
+   */
+
+  Gallery.prototype._transformThumbSetup = function(event, fn) {
+    this._setupComplete = false
+
+    // Cache the thumb being hovered over.
+    this._thumb = event.target
+
+    // Index of thumb.
+    this._thumbIndex = this._thumbs.indexOf(this._thumb)
+
+    // The full size image of that thumbnail.
+    this._fullImg = this._fullImgs[this._thumbIndex]
+
+    this._setupComplete = true
+
+    if (fn) fn()
+  }
+
+  Gallery.prototype._activateFullImg = function() {
+    this._thumb.classList.add('hide')
+    this._fullImg.classList.add('active')
+    this._fullImg.style[transformString] = 'translate3d(0,0,0)'
+    this._fullImgOpen = true
+
+    this._fullImgs.forEach(function(img) {
+      if (!img.classList.contains('active')) {
+        img.classList.add('almost-active')
+      }
+    })
+  }
+
+  /**
+   * Show the fullBox.
+   *
+   * @private
+   */
+
+  Gallery.prototype._activateFullBox = function() {
+    this._fullBox.classList.add('active')
+  }
+
+  /**
+   * Show the controls.
+   *
+   * @private
+   */
+
+  Gallery.prototype._activateControls = function() {
+    this._controls.classList.add('active')
+  }
+
+  /**
+   * CloseBtn click event.
+   *
+   * @private
+   */
+
+  Gallery.prototype._handleClose = function() {
+    if (this._fullImgOpen) {
+      this._closeFullImg.call(this)
+    }
+  }
+
+  Gallery.prototype._closeFullImg = function() {
+    var animation = function() {
+      this._fullBox.classList.remove('active')
+      this._controls.classList.remove('active')
+      this._fullImg.style[transformString] = this._fullImgsTransforms[
+        this._thumbIndex
+      ]
+      this._thumb.classList.remove('hide')
+
+      this._fullImgs.forEach(function(img) {
+        img.classList.remove('almost-active')
+      })
+
+      var fullImgTransEnd = function() {
+        this._fullImg.classList.remove('active')
+        this._fullImg.removeEventListener(transitionendString, fullImgTransEnd)
+
+        this._fullImgOpen = false
+      }.bind(this)
+
+      this._fullImg.addEventListener(transitionendString, fullImgTransEnd)
+      this._enableScroll()
+    }.bind(this)
+
+    window.requestAnimationFrame(animation)
+  }
+
+  /**
+   * NextBtn click event.
+   *
+   * @private
+   */
+
+  Gallery.prototype._handleNext = function() {
+    if (this._fullImgOpen) {
+      this._changeImg.call(this, 'next')
+    }
+  }
+
+  /**
+   * PrevBtn click event.
+   *
+   * @private
+   */
+
+  Gallery.prototype._handlePrev = function() {
+    if (this._fullImgOpen) {
+      this._changeImg.call(this, 'prev')
+    }
+  }
+
+  /**
+   * Changes the active full size image and active thumbnail based on which
+   * arrow was click (prev || next).
+   *
+   * @param {String} dir - A string to determine if we're going Prev or Next.
+   * @private
+   */
+
+  Gallery.prototype._changeImg = function(dir) {
+    this._thumbIndex = this._fullImgs.indexOf(this._fullImg)
+    dir === 'next' ? (this._thumbIndex += 1) : (this._thumbIndex -= 1)
+
+    this._newFullImg =
+      dir === 'next'
+        ? this._fullImg.nextElementSibling
+        : this._fullImg.previousElementSibling
+
+    if (!this._newFullImg || this._newFullImg.nodeName !== 'IMG') {
+      this._newFullImg =
+        dir === 'next'
+          ? (this._newFullImg = this._fullImgs[0])
+          : (this._newFullImg = this._fullImgs[this._fullImgs.length - 1])
+      dir === 'next'
+        ? (this._thumbIndex = 0)
+        : (this._thumbIndex = this._fullImgs.length - 1)
+    }
+
+    this._newFullImg.style[transformString] = 'translate3d(0,0,0)'
+    this._fullImg.classList.remove('active')
+    this._fullImg.style[transformString] = this._fullImgsTransforms[
+      this._thumbIndex - 1
+    ]
+
+    this._fullImg = this._newFullImg
+    this._fullImg.classList.add('active')
+  }
+
+  /**
+   * Disables scrolling. Activated when a full size image is open.
+   *
+   * @private
+   */
+
+  Gallery.prototype._disableScroll = function() {
+    function preventDefault(e) {
+      e = e || window.event
+      if (e.preventDefault) e.preventDefault()
+      e.returnValue = false
+    }
+
+    window.onwheel = preventDefault
+    window.ontouchmove = preventDefault
+  }
+
+  /**
+   * Enables scrolling. Activated when a full size image is closed.
+   *
+   * @private
+   */
+
+  Gallery.prototype._enableScroll = function() {
+    window.onwheel = null
+    window.ontouchmove = null
+  }
+
+  return Gallery
+})
+
+},{"./create-controls":4,"./vendor/google-image-layout":7,"imagesLoaded":2}],7:[function(require,module,exports){
 /**
  *
  * Google Image Layout v0.0.1
@@ -1637,127 +1667,127 @@ window.MaterialPhotoGallery = MaterialPhotoGallery;
  *
  */
 
-(function (root, factory) {
-	if (typeof define === 'function' && define.amd) {
-		define(function() {
-			return factory(root);
-		});
-	} else if (typeof exports === 'object') {
-		module.exports = factory;
-	} else {
-		root.GoogleImageLayout = factory(root);
-	}
-})(this, function (root) {
+;(function(root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    define(function() {
+      return factory(root)
+    })
+  } else if (typeof exports === 'object') {
+    module.exports = factory
+  } else {
+    root.GoogleImageLayout = factory(root)
+  }
+})(this, function(root) {
+  'use strict'
 
-	'use strict';
+  var GoogleImageLayout = {}
 
-	var GoogleImageLayout = {};
+  var HEIGHTS = [],
+    margin = 5
 
-	var HEIGHTS = [], margin = 5;
+  var turnObjToArray = function(obj) {
+    return [].map.call(obj, function(element) {
+      return element
+    })
+  }
 
-	var turnObjToArray = function(obj) {
-		return [].map.call(obj, function(element) {
-			return element;
-		})
-	};
+  var _debounceOrThrottle = function() {
+    if (!useDebounce && !!poll) {
+      return
+    }
+    clearTimeout(poll)
+    poll = setTimeout(function() {
+      echo.render()
+      poll = null
+    }, delay)
+  }
 
-	var _debounceOrThrottle = function () {
-		if(!useDebounce && !!poll) {
-			return;
-		}
-		clearTimeout(poll);
-		poll = setTimeout(function(){
-			echo.render();
-			poll = null;
-		}, delay);
-	};
+  /**
+   * Get the height that make all images fit the container
+   *
+   * width = w1 + w2 + w3 + ... = r1*h + r2*h + r3*h + ...
+   *
+   * @param  {[type]} images the images to be calculated
+   * @param  {[type]} width  the container witdth
+   * @param  {[type]} margin the margin between each image
+   *
+   * @return {[type]}        the height
+   */
+  var _getHeigth = function(images, width, margin) {
+    // width -= images.length * margin;
+    // width -= images.length;
 
-	/**
-	 * Get the height that make all images fit the container
-	 *
-	 * width = w1 + w2 + w3 + ... = r1*h + r2*h + r3*h + ...
-	 * 
-	 * @param  {[type]} images the images to be calculated
-	 * @param  {[type]} width  the container witdth
-	 * @param  {[type]} margin the margin between each image 
-	 * 
-	 * @return {[type]}        the height
-	 */
-	var _getHeigth = function(images, width, margin) {
+    var r = 0,
+      img
 
-		// width -= images.length * margin;
-		// width -= images.length;
+    for (var i = 0; i < images.length; i++) {
+      img = images[i]
+      r +=
+        parseInt(img.getAttribute('data-width')) /
+        parseInt(img.getAttribute('data-height'))
+    }
 
-		var r = 0, img;
+    return width / r //have to round down because Firefox will automatically roundup value with number of decimals > 3
+  }
 
-		for (var i = 0 ; i < images.length; i++) {
-			img = images[i];
-			r += parseInt(img.getAttribute('data-width')) / parseInt(img.getAttribute('data-height'));
-		}
+  var _setHeight = function(images, height) {
+    // console.log("set height");
 
-		return width / r; //have to round down because Firefox will automatically roundup value with number of decimals > 3
+    HEIGHTS.push(height)
 
-	};
+    var img
 
-	var _setHeight = function(images, height) {
+    for (var i = 0; i < images.length; i++) {
+      img = images[i]
+      img.style.width =
+        (height * parseInt(img.getAttribute('data-width'))) /
+          parseInt(img.getAttribute('data-height')) +
+        'px'
+      img.style.height = height + 'px'
+      img.classList.add('layout-completed')
+    }
+  }
 
-		// console.log("set height");
+  GoogleImageLayout.init = function(opts) {
+    opts = opts || {}
+    var nodes = document.querySelectorAll('div[data-google-image-layout]')
+    var length = nodes.length
+    var elem
 
-		HEIGHTS.push(height);
+    for (var i = 0; i < length; i++) {
+      elem = nodes[i]
+      GoogleImageLayout.align(elem)
+    }
 
-		var img;
+    if (opts.after) opts.after()
+  }
 
-		for (var i = 0 ; i < images.length; i++) {
-			img = images[i];
-			img.style.width = height * parseInt(img.getAttribute('data-width')) / parseInt(img.getAttribute('data-height')) + 'px';
-			img.style.height = height + 'px';
-			img.classList.add('layout-completed');
-		}
+  GoogleImageLayout.align = function(elem) {
+    //get the data attribute
 
-	};
+    var containerWidth = elem.clientWidth,
+      maxHeight = parseInt(elem.getAttribute('data-max-height') || 120)
 
-	GoogleImageLayout.init = function (opts) {
-		opts = opts || {};
-		var nodes = document.querySelectorAll('div[data-google-image-layout]');
-		var length = nodes.length;
-		var elem;
+    var imgNodes = turnObjToArray(elem.querySelectorAll('img'))
 
-		for (var i = 0 ; i < length; i++) {
-			elem = nodes[i];
-			GoogleImageLayout.align(elem);
-		}
+    w: while (imgNodes.length > 0) {
+      for (var i = 1; i <= imgNodes.length; i++) {
+        var slice = imgNodes.slice(0, i)
+        var h = _getHeigth(slice, containerWidth, margin)
 
-		if (opts.after) opts.after();
-	};
+        if (h < maxHeight) {
+          _setHeight(slice, h)
+          imgNodes = imgNodes.slice(i)
+          continue w
+        }
+      }
 
-	GoogleImageLayout.align = function(elem) {
+      _setHeight(slice, Math.min(maxHeight, h))
+      break
+    }
+  }
 
-		//get the data attribute
-		
-		var containerWidth = elem.clientWidth,
-			maxHeight = parseInt(elem.getAttribute('data-max-height') || 120);
+  return GoogleImageLayout
+})
 
-		var imgNodes = turnObjToArray(elem.querySelectorAll('img'));
-
-		w : while (imgNodes.length > 0) {
-
-			for (var i = 1 ; i <= imgNodes.length; i++) {
-				var slice = imgNodes.slice(0, i);
-				var h = _getHeigth(slice, containerWidth, margin);
-
-				if (h < maxHeight) {
-					_setHeight(slice, h);
-					imgNodes = imgNodes.slice(i);
-					continue w;
-				}
-			}
-
-			_setHeight(slice, Math.min(maxHeight, h));
-			break;
-		}
-
-	};
-
-	return GoogleImageLayout;
-});
 },{}]},{},[5]);
