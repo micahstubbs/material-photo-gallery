@@ -8,126 +8,125 @@
  *
  */
 
-(function (root, factory) {
-	if (typeof define === 'function' && define.amd) {
-		define(function() {
-			return factory(root);
-		});
-	} else if (typeof exports === 'object') {
-		module.exports = factory;
-	} else {
-		root.GoogleImageLayout = factory(root);
-	}
-})(this, function (root) {
+;(function(root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    define(function() {
+      return factory(root)
+    })
+  } else if (typeof exports === 'object') {
+    module.exports = factory
+  } else {
+    root.GoogleImageLayout = factory(root)
+  }
+})(this, function(root) {
+  'use strict'
 
-	'use strict';
+  var GoogleImageLayout = {}
 
-	var GoogleImageLayout = {};
+  var HEIGHTS = [],
+    margin = 5
 
-	var HEIGHTS = [], margin = 5;
+  var turnObjToArray = function(obj) {
+    return [].map.call(obj, function(element) {
+      return element
+    })
+  }
 
-	var turnObjToArray = function(obj) {
-		return [].map.call(obj, function(element) {
-			return element;
-		})
-	};
+  var _debounceOrThrottle = function() {
+    if (!useDebounce && !!poll) {
+      return
+    }
+    clearTimeout(poll)
+    poll = setTimeout(function() {
+      echo.render()
+      poll = null
+    }, delay)
+  }
 
-	var _debounceOrThrottle = function () {
-		if(!useDebounce && !!poll) {
-			return;
-		}
-		clearTimeout(poll);
-		poll = setTimeout(function(){
-			echo.render();
-			poll = null;
-		}, delay);
-	};
+  /**
+   * Get the height that make all images fit the container
+   *
+   * width = w1 + w2 + w3 + ... = r1*h + r2*h + r3*h + ...
+   *
+   * @param  {[type]} images the images to be calculated
+   * @param  {[type]} width  the container witdth
+   * @param  {[type]} margin the margin between each image
+   *
+   * @return {[type]}        the height
+   */
+  var _getHeigth = function(images, width, margin) {
+    // width -= images.length * margin;
+    // width -= images.length;
 
-	/**
-	 * Get the height that make all images fit the container
-	 *
-	 * width = w1 + w2 + w3 + ... = r1*h + r2*h + r3*h + ...
-	 * 
-	 * @param  {[type]} images the images to be calculated
-	 * @param  {[type]} width  the container witdth
-	 * @param  {[type]} margin the margin between each image 
-	 * 
-	 * @return {[type]}        the height
-	 */
-	var _getHeigth = function(images, width, margin) {
+    var r = 0,
+      img
 
-		// width -= images.length * margin;
-		// width -= images.length;
+    for (var i = 0; i < images.length; i++) {
+      img = images[i]
+      r +=
+        parseInt(img.getAttribute('data-width')) /
+        parseInt(img.getAttribute('data-height'))
+    }
 
-		var r = 0, img;
+    return width / r //have to round down because Firefox will automatically roundup value with number of decimals > 3
+  }
 
-		for (var i = 0 ; i < images.length; i++) {
-			img = images[i];
-			r += parseInt(img.getAttribute('data-width')) / parseInt(img.getAttribute('data-height'));
-		}
+  var _setHeight = function(images, height) {
+    // console.log("set height");
 
-		return width / r; //have to round down because Firefox will automatically roundup value with number of decimals > 3
+    HEIGHTS.push(height)
 
-	};
+    var img
 
-	var _setHeight = function(images, height) {
+    for (var i = 0; i < images.length; i++) {
+      img = images[i]
+      img.style.width =
+        (height * parseInt(img.getAttribute('data-width'))) /
+          parseInt(img.getAttribute('data-height')) +
+        'px'
+      img.style.height = height + 'px'
+      img.classList.add('layout-completed')
+    }
+  }
 
-		// console.log("set height");
+  GoogleImageLayout.init = function(opts) {
+    opts = opts || {}
+    var nodes = document.querySelectorAll('div[data-google-image-layout]')
+    var length = nodes.length
+    var elem
 
-		HEIGHTS.push(height);
+    for (var i = 0; i < length; i++) {
+      elem = nodes[i]
+      GoogleImageLayout.align(elem)
+    }
 
-		var img;
+    if (opts.after) opts.after()
+  }
 
-		for (var i = 0 ; i < images.length; i++) {
-			img = images[i];
-			img.style.width = height * parseInt(img.getAttribute('data-width')) / parseInt(img.getAttribute('data-height')) + 'px';
-			img.style.height = height + 'px';
-			img.classList.add('layout-completed');
-		}
+  GoogleImageLayout.align = function(elem) {
+    //get the data attribute
 
-	};
+    var containerWidth = elem.clientWidth,
+      maxHeight = parseInt(elem.getAttribute('data-max-height') || 120)
 
-	GoogleImageLayout.init = function (opts) {
-		opts = opts || {};
-		var nodes = document.querySelectorAll('div[data-google-image-layout]');
-		var length = nodes.length;
-		var elem;
+    var imgNodes = turnObjToArray(elem.querySelectorAll('img'))
 
-		for (var i = 0 ; i < length; i++) {
-			elem = nodes[i];
-			GoogleImageLayout.align(elem);
-		}
+    w: while (imgNodes.length > 0) {
+      for (var i = 1; i <= imgNodes.length; i++) {
+        var slice = imgNodes.slice(0, i)
+        var h = _getHeigth(slice, containerWidth, margin)
 
-		if (opts.after) opts.after();
-	};
+        if (h < maxHeight) {
+          _setHeight(slice, h)
+          imgNodes = imgNodes.slice(i)
+          continue w
+        }
+      }
 
-	GoogleImageLayout.align = function(elem) {
+      _setHeight(slice, Math.min(maxHeight, h))
+      break
+    }
+  }
 
-		//get the data attribute
-		
-		var containerWidth = elem.clientWidth,
-			maxHeight = parseInt(elem.getAttribute('data-max-height') || 120);
-
-		var imgNodes = turnObjToArray(elem.querySelectorAll('img'));
-
-		w : while (imgNodes.length > 0) {
-
-			for (var i = 1 ; i <= imgNodes.length; i++) {
-				var slice = imgNodes.slice(0, i);
-				var h = _getHeigth(slice, containerWidth, margin);
-
-				if (h < maxHeight) {
-					_setHeight(slice, h);
-					imgNodes = imgNodes.slice(i);
-					continue w;
-				}
-			}
-
-			_setHeight(slice, Math.min(maxHeight, h));
-			break;
-		}
-
-	};
-
-	return GoogleImageLayout;
-});
+  return GoogleImageLayout
+})
