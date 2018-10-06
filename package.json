@@ -8,7 +8,13 @@
     "start": "live-server",
     "copy": "cp -r dist/ /Users/m/workspace/photo-transition-experiments/lib/material-photo-gallery/"
   },
-  "keywords": ["material", "google", "photo", "gallery", "javascript"],
+  "keywords": [
+    "material",
+    "google",
+    "photo",
+    "gallery",
+    "javascript"
+  ],
   "license": "MIT",
   "devDependencies": {
     "autoprefixer": "^5.2.0",
@@ -25,6 +31,7 @@
     "imagesloaded": "^3.2.0",
     "jshint-stylish": "^2.0.1",
     "live-server": "^1.2.0",
+    "prettier": "^1.14.3",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   },
