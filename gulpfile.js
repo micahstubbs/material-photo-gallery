@@ -1,5 +1,4 @@
 var gulp = require('gulp')
-var sass = require('gulp-sass')
 var concat = require('gulp-concat')
 var uglify = require('gulp-uglify')
 var rename = require('gulp-rename')
@@ -16,7 +15,7 @@ var paths = {
   index: './index.html',
 
   src: {
-    scss: './src/scss/*scss',
+    css: './src/css/*css',
     js: './src/js/*.js',
     jsIndex: './src/js/index.js',
     jsMain: './src/js/material-photo-gallery.js'
@@ -29,20 +28,17 @@ var paths = {
   }
 }
 
-gulp.task('init', ['scss', 'browserify'], function() {
-  gulp.watch(paths.src.scss, ['scss'])
+gulp.task('watch', ['css', 'browserify'], function() {
+  gulp.watch(paths.src.css, ['css'])
   gulp.watch(paths.src.js, ['browserify'])
 })
 
-gulp.task('scss', function() {
+gulp.task('css', function() {
   return gulp
-    .src(paths.src.scss)
-    .pipe(sourcemaps.init())
-    .pipe(sass())
+    .src(paths.src.css)
     .on('error', handleError)
     .pipe(postcss([autoprefixer()]))
     .pipe(minifyCSS())
-    .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest(paths.dist.css))
 })
 
@@ -64,4 +60,4 @@ function handleError(err) {
   this.emit('end')
 }
 
-gulp.task('default', ['init'])
+gulp.task('default', ['css', 'browserify'])
