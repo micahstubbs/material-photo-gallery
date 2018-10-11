@@ -1160,12 +1160,12 @@ window.MaterialPhotoGallery = MaterialPhotoGallery
       /*most significant*/
       if (xDiff > 0) {
         /* left swipe */
-        alert('left swipe')
-        this._handlePrev.bind(this)()
+        // alert('left swipe')
+        this._handleNext()
       } else {
         /* right swipe */
-        alert('right swipe')
-        this._handleNext.bind(this)()
+        // alert('right swipe')
+        this._handlePrev()
       }
     } else {
       if (yDiff > 0) {
@@ -1346,8 +1346,8 @@ window.MaterialPhotoGallery = MaterialPhotoGallery
     window.addEventListener('scroll', this._handleScroll.bind(this))
 
     // touch events
-    document.addEventListener('touchstart', handleTouchStart, false)
-    document.addEventListener('touchmove', handleTouchMove, false)
+    document.addEventListener('touchstart', handleTouchStart.bind(this))
+    document.addEventListener('touchmove', handleTouchMove.bind(this))
   }
 
   Gallery.prototype._handleScroll = debounce(function() {
