@@ -1129,6 +1129,57 @@ window.MaterialPhotoGallery = MaterialPhotoGallery
   }
 
   /**
+   * handle touch events
+   */
+  var xDown = null
+  var yDown = null
+
+  function getTouches(evt) {
+    return (
+      evt.touches || evt.originalEvent.touches // browser API
+    ) // jQuery
+  }
+
+  function handleTouchStart(evt) {
+    xDown = getTouches(evt)[0].clientX
+    yDown = getTouches(evt)[0].clientY
+  }
+
+  function handleTouchMove(evt) {
+    if (!xDown || !yDown) {
+      return
+    }
+
+    var xUp = evt.touches[0].clientX
+    var yUp = evt.touches[0].clientY
+
+    var xDiff = xDown - xUp
+    var yDiff = yDown - yUp
+
+    if (Math.abs(xDiff) > Math.abs(yDiff)) {
+      /*most significant*/
+      if (xDiff > 0) {
+        /* left swipe */
+        alert('left swipe')
+        this._handlePrev.bind(this)()
+      } else {
+        /* right swipe */
+        alert('right swipe')
+        this._handleNext.bind(this)()
+      }
+    } else {
+      if (yDiff > 0) {
+        /* up swipe */
+      } else {
+        /* down swipe */
+      }
+    }
+    /* reset values */
+    xDown = null
+    yDown = null
+  }
+
+  /**
    * Css class names stored as strings.
    *
    * @private
@@ -1293,6 +1344,10 @@ window.MaterialPhotoGallery = MaterialPhotoGallery
     this._prevBtn.addEventListener('click', this._handlePrev.bind(this))
 
     window.addEventListener('scroll', this._handleScroll.bind(this))
+
+    // touch events
+    document.addEventListener('touchstart', handleTouchStart, false)
+    document.addEventListener('touchmove', handleTouchMove, false)
   }
 
   Gallery.prototype._handleScroll = debounce(function() {
