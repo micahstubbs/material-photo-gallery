@@ -1032,9 +1032,8 @@ window.MaterialPhotoGallery = MaterialPhotoGallery
 },{"./material-photo-gallery":6}],6:[function(require,module,exports){
 /**
  *
- * Material Photo Gallery v0.0.1
+ * Material Photo Gallery v0.1.0
  * A photo gallery inspired by Google Photos.
- * http://ettrics.com
  *
  * Free to use under the MIT License.
  *
