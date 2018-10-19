@@ -2,11 +2,11 @@
 
 A vanilla javascript photo gallery plugin inspired by Google Photos.
 
-## Demo
+## Example
 
-<a href="//micahstubbs.github.io/material-photo-gallery/example">View example</a>
+[view example](//micahstubbs.github.io/material-photo-gallery/example)
 
-![scaled-material-photo-gallery](https://user-images.githubusercontent.com/2119400/47237268-63a1c700-d393-11e8-8798-d8d8b264ed23.png)
+[![scaled-material-photo-gallery](https://user-images.githubusercontent.com/2119400/47237268-63a1c700-d393-11e8-8798-d8d8b264ed23.png)](//micahstubbs.github.io/material-photo-gallery/example)
 
 ## Install
 
