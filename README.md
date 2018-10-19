@@ -6,6 +6,8 @@ A vanilla javascript photo gallery plugin inspired by Google Photos.
 
 <a href="//micahstubbs.github.io/material-photo-gallery/example">View example</a>
 
+![scaled-material-photo-gallery](https://user-images.githubusercontent.com/2119400/47237268-63a1c700-d393-11e8-8798-d8d8b264ed23.png)
+
 ## Install
 
 #### Usage
