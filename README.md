@@ -4,15 +4,9 @@ A vanilla javascript photo gallery plugin inspired by Google Photos.
 
 ## Demo
 
-<a href="//micahstubbs.github.io/material-photo-gallery/">View demo</a>
+<a href="//micahstubbs.github.io/material-photo-gallery/example">View example</a>
 
 ## Install
-
-#### NPM
-
-```
-npm install material-photo-gallery --save-dev
-```
 
 #### Usage
 
