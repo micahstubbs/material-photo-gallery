@@ -1,6 +1,6 @@
 # Material Photo Gallery
 
-A vanilla javascript photo gallery plugin inspired by Google Photos.
+a vanilla JavaScript photo gallery plugin built with design inspiration from Google Photos
 
 [![scaled-material-photo-gallery](https://user-images.githubusercontent.com/2119400/47237268-63a1c700-d393-11e8-8798-d8d8b264ed23.png)](//micahstubbs.github.io/material-photo-gallery/example)
 
