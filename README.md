@@ -72,7 +72,7 @@ var gallery = new Gallery(elem)
 
 This project uses [imagesLoaded by David DeSandro](https://github.com/desandro/imagesloaded), and [Google Image Layout by ptgamr](https://github.com/ptgamr/google-image-layout).
 
-A fork of https://github.com/TrueValentine/material-photo-gallery
+A fork of https://github.com/TrueValentine/material-photo-gallery that modernises the codebase and adds new features, like swipe gestures on mobile to navigate the gallery from the detail view.
 
 ## License
 
