@@ -91,7 +91,7 @@
 
   GoogleImageLayout.init = function(opts) {
     opts = opts || {}
-    var nodes = document.querySelectorAll('div[data-google-image-layout]')
+    var nodes = (opts.element || document).querySelectorAll('div[data-google-image-layout]')
     var length = nodes.length
     var elem
 
